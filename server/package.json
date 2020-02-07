@@ -1,0 +1,9 @@
+{
+  "name": "graphql-boilerplate",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "graphql-yoga": "1.18.3"
+  }
+}
