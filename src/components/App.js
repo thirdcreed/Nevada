@@ -1,19 +1,35 @@
 import React, { Component } from 'react'
 import { gql } from 'apollo-boost'
 import { Query } from 'react-apollo'
-import logo from '../logo.svg'
 import '../styles/App.css'
-import InputName from './InputName'
+import Nevada from './Nevada';
+import Sankey from './CorrelationSankey';
+import CorrelationMatrix from './CorrelationMatrix';
+import styled from 'styled-components';
+
+const AppBody = styled.div`
+display:flex;
+flex-direction:row;
+`;
+
+const Title = styled.div`
+font-size: 35px;
+display:flex;
+justify-content:center;
+margin:10px;
+`;
+const SubTitle = styled.div`
+font-size: 14px;
+display:flex;
+justify-content:center;
+`;
 
 class App extends Component {
   render() {
     return (
-      <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
+      <div className="AppBody">
           <Query query={HELLO_QUERY}>
             {props => {
-              console.log(props)
               const { data, loading, error, refetch } = props
               if (loading) {
                 return <div>Loading</div>
@@ -24,21 +40,21 @@ class App extends Component {
               }
 
               return (
-                <div>
-                  <p>What's your name?</p>
-                  <InputName
-                    onSubmit={name => {
-                      refetch({
-                        name,
-                      })
-                    }}
-                  />
-                  <h3>{data.hello}</h3>
-                </div>
+                <AppBody>
+                  <div>
+                    <Title>Nevada Files</Title>
+                    <SubTitle>PPP Cranks Investigate</SubTitle>
+                  </div>
+                  <Nevada data={[1,2,3]}></Nevada>
+                  <div>
+                    <CorrelationMatrix></CorrelationMatrix>
+                    <Sankey></Sankey>
+                  </div>
+                 
+                </AppBody>
               )
             }}
-          </Query>
-        </div>
+          </Query> 
       </div>
     )
   }
