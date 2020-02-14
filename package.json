@@ -1,5 +1,5 @@
 {
-  "name": "minimal",
+  "name": "nevada",
   "dependencies": {
     "apollo-boost": "0.4.7",
     "d3": "^5.15.0",
