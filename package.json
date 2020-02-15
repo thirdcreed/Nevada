@@ -1,6 +1,8 @@
 {
   "name": "nevada",
   "dependencies": {
+    "@emotion/core": "^10.0.27",
+    "@emotion/styled": "^10.0.27",
     "apollo-boost": "0.4.7",
     "d3": "^5.15.0",
     "d3-sankey": "^0.12.3",
@@ -9,10 +11,12 @@
     "react-apollo": "2.5.8",
     "react-dom": "16.12.0",
     "react-scripts": "2.1.8",
-    "styled-components": "^5.0.1"
+    "styled-components": "^5.0.1",
+    "theme-ui": "^0.3.1"
   },
   "scripts": {
     "start": "react-scripts start",
+    "dev": "concurrently --raw --kill-others 'yarn start' 'cd server && yarn start'",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
@@ -22,5 +26,8 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "devDependencies": {
+    "concurrently": "^5.1.0"
+  }
 }
