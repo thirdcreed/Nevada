@@ -2,7 +2,7 @@
 import React from "react";
 import { jsx } from "theme-ui";
 import { precinctData, candidateDisplayName } from "../lib/precinctData";
-import { Styled, Box } from "theme-ui";
+import { Styled, Box, Button } from "theme-ui";
 
 const mockData = precinctData();
 
@@ -10,140 +10,204 @@ const boolToString = b => (b ? "Yes" : "No");
 
 export const PrecinctTable = ({ data = mockData }) => {
   const { name, result } = data;
+  const [showVotes, setShowVotes] = React.useState(true);
+  const [showRules, setShowRules] = React.useState(true);
+  const [showIssues, setShowIssues] = React.useState(true);
+
+  // TODO: consider making these toggles in each section and passing in the raw setter
+  // This way we could use useEffect() to set the initial show state based on local logic
+  // or we could just do that up here with our actual initial values
+  const toggleShowVotes = () => {
+    setShowVotes(!showVotes);
+  };
+  const toggleShowRules = () => {
+    setShowRules(!showRules);
+  };
+  const toggleShowIssues = () => {
+    setShowIssues(!showIssues);
+  };
 
   return (
     <Box sx={{ width: "100%" }}>
       <Styled.h3>{name}</Styled.h3>
       <Styled.table sx={{ width: "100%" }}>
-        <VotesSection result={result} />
-        <MetaSection result={result} />
-        <IssuesSection result={result} />
+        <VotesSection
+          show={showVotes}
+          toggleShow={toggleShowVotes}
+          result={result}
+        />
+        <RulesSection
+          show={showRules}
+          toggleShow={toggleShowRules}
+          result={result}
+        />
+        <IssuesSection
+          show={showIssues}
+          toggleShow={toggleShowIssues}
+          result={result}
+        />
       </Styled.table>
     </Box>
   );
 };
 
-const SectionHeader = ({ title, children }) => {
+const SectionHeader = ({ title, subtitle = "", toggleShow, show }) => {
   return (
-    <Styled.tr>
-      <Styled.th colSpan={children ? "1" : "5"}>
-        <Styled.h3>{title}</Styled.h3>
-      </Styled.th>
-      {children && children}
-    </Styled.tr>
+    <thead>
+      <Styled.tr>
+        <Styled.th colSpan="1">
+          <Styled.h3>{title}</Styled.h3>
+        </Styled.th>
+        <Styled.th sx={{textAlign: "right"}} colSpan="3">
+          <Styled.h4>{subtitle}</Styled.h4>
+        </Styled.th>
+        <Styled.th colSpan="3" sx={{textAlign: "right"}}>
+          <Button onClick={toggleShow}>{show ? "Hide" : "Show"}</Button>
+        </Styled.th>
+      </Styled.tr>
+    </thead>
   );
 };
 
-const VotesSection = ({ result }) => {
+const VotesSection = ({ result, show, toggleShow }) => {
   const allCandidateKeys = Object.keys(result.firstRoundVotes);
-  console.log(result);
-  return (
-    <>
-      <thead>
-        <SectionHeader title="Votes"></SectionHeader>
-        <Styled.tr>
-          <Styled.th>
-            <Styled.h5>Name</Styled.h5>
-          </Styled.th>
-          <Styled.th>
-            <Styled.h5>Round 1</Styled.h5>
-          </Styled.th>
-          <Styled.th>
-            <Styled.h5>Round 2</Styled.h5>
-          </Styled.th>
-          <Styled.th>
-            <Styled.h5>Expected SDEs</Styled.h5>
-          </Styled.th>
-          <Styled.th>
-            <Styled.h5>Actual SDEs</Styled.h5>
-          </Styled.th>
-        </Styled.tr>
-      </thead>
-      <tbody>
-        {allCandidateKeys.map(k => (
-          <Styled.tr key={k}>
-            <Styled.td>
-              <Styled.p>{candidateDisplayName(k) || k}</Styled.p>
-            </Styled.td>
-            <Styled.td>
-              <Styled.p key={k}>{result.firstRoundVotes[k]}</Styled.p>
-            </Styled.td>
-            <Styled.td>
-              <Styled.p key={k}>{result.secondRoundVotes[k]}</Styled.p>
-            </Styled.td>
-            <Styled.td>
-              <Styled.p key={k}>
-                {result.expectedOutcome.awardedSDEs[k]}
-              </Styled.p>
-            </Styled.td>
-            <Styled.td>
-              <Styled.p key={k}>{result.actualOutcome.awardedSDEs[k]}</Styled.p>
-            </Styled.td>
-          </Styled.tr>
-        ))}
-      </tbody>
-    </>
-  );
-};
 
-const MetaSection = ({ result }) => {
   return (
     <>
-      <thead>
-        <SectionHeader title="Weird Rules"></SectionHeader>
-        <Styled.tr>
-          <Styled.th colSpan="1" />
-          <Styled.th colSpan="2">
-            <Styled.h5>Expected</Styled.h5>
-          </Styled.th>
-          <Styled.th colSpan="2">
-            <Styled.h5>Actual</Styled.h5>
-          </Styled.th>
-        </Styled.tr>
-      </thead>
-      <tbody>
-        <Styled.tr>
-          <Styled.td colSpan="1">
-            <Styled.p>Coin Toss</Styled.p>
-          </Styled.td>
-          <Styled.td colSpan="2">
-            <Styled.p>{boolToString(result.expectedOutcome.coinToss)}</Styled.p>
-          </Styled.td>
-          <Styled.td colSpan="2">
-            <Styled.p>{boolToString(result.actualOutcome.coinToss)}</Styled.p>
-          </Styled.td>
-        </Styled.tr>
-        <Styled.tr>
-          <Styled.td colSpan="1">
-            <Styled.p>Duel</Styled.p>
-          </Styled.td>
-          <Styled.td colSpan="2">
-            <Styled.p>{boolToString(result.expectedOutcome.coinToss)}</Styled.p>
-          </Styled.td>
-          <Styled.td colSpan="2">
-            <Styled.p>{boolToString(result.actualOutcome.coinToss)}</Styled.p>
-          </Styled.td>
-        </Styled.tr>
-      </tbody>
-    </>
-  );
-};
-
-const IssuesSection = ({ result }) => {
-  return (
-    <>
-      <thead>
-        <SectionHeader title="Possible Issues"></SectionHeader>
-      </thead>
-      <tbody>
-        <tr>
-          <Styled.td colSpan="5">
-            {result.issues.map(iss => (
-              <Styled.p key={iss}>- {iss}</Styled.p>
+      <SectionHeader title="Votes" show={show} toggleShow={toggleShow} />
+      {show && (
+        <>
+          <thead>
+            <Styled.tr>
+              <Styled.th>
+                <Styled.h5>Name</Styled.h5>
+              </Styled.th>
+              <Styled.th>
+                <Styled.h5>Round 1</Styled.h5>
+              </Styled.th>
+              <Styled.th>
+                <Styled.h5>Round 2</Styled.h5>
+              </Styled.th>
+              <Styled.th>
+                <Styled.h5>Expected SDEs</Styled.h5>
+              </Styled.th>
+              <Styled.th>
+                <Styled.h5>Actual SDEs</Styled.h5>
+              </Styled.th>
+            </Styled.tr>
+          </thead>
+          <tbody>
+            {allCandidateKeys.map(k => (
+              <Styled.tr key={k}>
+                <Styled.td>
+                  <Styled.p>{candidateDisplayName(k) || k}</Styled.p>
+                </Styled.td>
+                <Styled.td>
+                  <Styled.p key={k}>{result.firstRoundVotes[k]}</Styled.p>
+                </Styled.td>
+                <Styled.td>
+                  <Styled.p key={k}>{result.secondRoundVotes[k]}</Styled.p>
+                </Styled.td>
+                <Styled.td>
+                  <Styled.p key={k}>
+                    {result.expectedOutcome.awardedSDEs[k]}
+                  </Styled.p>
+                </Styled.td>
+                <Styled.td>
+                  <Styled.p key={k}>
+                    {result.actualOutcome.awardedSDEs[k]}
+                  </Styled.p>
+                </Styled.td>
+              </Styled.tr>
             ))}
-          </Styled.td>
-        </tr>
-      </tbody>
+          </tbody>
+        </>
+      )}
+    </>
+  );
+};
+
+const RulesSection = ({ result, show, toggleShow }) => {
+  return (
+    <>
+      <SectionHeader
+        title="Caucus Rules"
+        show={show}
+        toggleShow={toggleShow}
+      ></SectionHeader>
+      {show && (
+        <>
+          <thead>
+            <Styled.tr>
+              <Styled.th colSpan="1" />
+              <Styled.th colSpan="2">
+                <Styled.h5>Expected</Styled.h5>
+              </Styled.th>
+              <Styled.th colSpan="2">
+                <Styled.h5>Actual</Styled.h5>
+              </Styled.th>
+            </Styled.tr>
+          </thead>
+          <tbody>
+            <Styled.tr>
+              <Styled.td colSpan="1">
+                <Styled.p>Coin Toss</Styled.p>
+              </Styled.td>
+              <Styled.td colSpan="2">
+                <Styled.p>
+                  {boolToString(result.expectedOutcome.coinToss)}
+                </Styled.p>
+              </Styled.td>
+              <Styled.td colSpan="2">
+                <Styled.p>
+                  {boolToString(result.actualOutcome.coinToss)}
+                </Styled.p>
+              </Styled.td>
+            </Styled.tr>
+            <Styled.tr>
+              <Styled.td colSpan="1">
+                <Styled.p>Duel</Styled.p>
+              </Styled.td>
+              <Styled.td colSpan="2">
+                <Styled.p>
+                  {boolToString(result.expectedOutcome.coinToss)}
+                </Styled.p>
+              </Styled.td>
+              <Styled.td colSpan="2">
+                <Styled.p>
+                  {boolToString(result.actualOutcome.coinToss)}
+                </Styled.p>
+              </Styled.td>
+            </Styled.tr>
+          </tbody>
+        </>
+      )}
+    </>
+  );
+};
+
+const IssuesSection = ({ result, show, toggleShow }) => {
+  const issueCount = result.issues.length
+  const subtitle = `${issueCount} issue${issueCount === 1 ? "" : "s"} identified`
+  return (
+    <>
+      <SectionHeader
+        title="Possible Issues"
+        subtitle={subtitle}
+        show={show}
+        toggleShow={toggleShow}
+      ></SectionHeader>
+      {show && (
+        <tbody>
+          <tr>
+            <Styled.td colSpan="5">
+              {result.issues.map(iss => (
+                <Styled.p key={iss}>- {iss}</Styled.p>
+              ))}
+            </Styled.td>
+          </tr>
+        </tbody>
+      )}
     </>
   );
 };
