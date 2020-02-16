@@ -39,7 +39,7 @@ class App extends Component {
             return (
               <>
                 <Box sx={{ p: 1, border: "1px solid", borderColor: "primary" }}>
-                  <Nevada data={[1, 2, 3]}></Nevada>
+                  {/* <Nevada data={[1, 2, 3]}></Nevada> */}
                 </Box>
                 <Box sx={{ mt: 2, mx: "auto" }}>
                   <CorrelationMatrix></CorrelationMatrix>
