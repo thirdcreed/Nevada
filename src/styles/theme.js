@@ -12,34 +12,34 @@ const colors = {
     "4": "hsl(0,0%,68%)",
     "5": "hsl(0,0%,77%)",
     "6": "hsl(0,0%,85%)",
-    "7": "hsl(0,0%,93%)",
-  },
-}
+    "7": "hsl(0,0%,93%)"
+  }
+};
 
 const fontFamilies = {
   mono: "Fira Mono",
   sans: "Roboto, system-ui, sans-serif",
-  serif: "itc-american-typewriter, serif",
-}
+  serif: "itc-american-typewriter, serif"
+};
 
 const fonts = {
   ...fontFamilies,
   body: fontFamilies.serif,
-  heading: fontFamilies.serif,
-}
+  heading: fontFamilies.serif
+};
 
-export const theme  = {
+export const theme = {
   space: [0, 4, 8, 16, 32, 64, 128, 256, 512],
   fonts,
   fontSizes: [12, 14, 16, 20, 24, 32, 48, 64, 96],
   fontWeights: {
     body: 400,
     heading: 500,
-    bold: 700,
+    bold: 700
   },
   lineHeights: {
     body: 1.5,
-    heading: 1.125,
+    heading: 1.125
   },
   shadows: ["none", "inset 0 0 0 2px", "0 0 16px rgba(0, 0, 0, .25)"],
   colors: {
@@ -48,7 +48,7 @@ export const theme  = {
     text: colors.text,
     secondary: colors.secondary,
     primary: colors.blue,
-    muted: "#f1f3f4",
+    muted: "#f1f3f4"
   },
   radii: [0, 2, 3, 5, 10],
   styles: {
@@ -56,9 +56,9 @@ export const theme  = {
       fontFamily: "body",
       lineHeight: "body",
       fontWeight: "body",
-      'h1, h2, h3':{
-        fontFamily: 'heading',
-        lineHeight: 'heading'
+      "h1, h2, h3": {
+        fontFamily: "heading",
+        lineHeight: "heading"
       }
     },
     h1: {
@@ -66,74 +66,79 @@ export const theme  = {
       fontFamily: "heading",
       lineHeight: "1.2",
       fontWeight: "heading",
-      fontSize: 5,
+      fontSize: 5
     },
     h2: {
       color: "text",
       fontFamily: "heading",
       lineHeight: "1.2",
       fontWeight: "heading",
-      fontSize: 4,
+      fontSize: 4
     },
     h3: {
       color: "text",
       fontFamily: "heading",
       lineHeight: "1.2",
       fontWeight: "heading",
-      fontSize: 3,
+      fontSize: 3
     },
     h4: {
       color: "text",
       fontFamily: "heading",
       lineHeight: "1.2",
       fontWeight: "heading",
-      fontSize: 2,
+      fontSize: 2
     },
     h5: {
       color: "text",
       fontFamily: "heading",
       lineHeight: "1.2",
       fontWeight: "heading",
-      fontSize: 1,
+      fontSize: 1
     },
     h6: {
       color: "text",
       fontFamily: "heading",
       lineHeight: "1.2",
       fontWeight: "heading",
-      fontSize: 0,
+      fontSize: 0
     },
     p: {
       color: "text",
       fontFamily: "body",
       fontWeight: "body",
-      lineHeight: "body",
+      lineHeight: "body"
     },
     a: {
-      color: "primary",
+      color: "primary"
     },
     pre: {
       fontFamily: "monospace",
-      overflowX: "auto",
+      overflowX: "auto"
     },
     code: {
       fontFamily: "monospace",
-      fontSize: "inherit",
+      fontSize: "inherit"
     },
     table: {
       width: "100%",
       borderCollapse: "separate",
-      borderSpacing: 0,
+      borderSpacing: 0
     },
     th: {
       textAlign: "left",
       borderBottomStyle: "solid",
+      borderBottomWidth: "1px",
+      px: 1
     },
     td: {
       textAlign: "left",
       borderBottomStyle: "solid",
-    },
+      borderBottomWidth: "1px",
+      px: 1
+    }
   },
+  /* This section needs to be updated for theme-ui's newer interface */
   componentStyles: {
     Button: {
       display: "inline-block",
@@ -155,15 +160,15 @@ export const theme  = {
       borderRadius: 3,
       ":disabled": {
         bg: "gray.5",
-        color: "muted",
+        color: "muted"
       },
       variants: {
         outline: {
           color: "primary",
           bg: "background",
-          boxShadow: 1,
-        },
-      },
+          boxShadow: 1
+        }
+      }
     },
     Card: {
       p: 2,
@@ -172,20 +177,20 @@ export const theme  = {
       borderRadius: 2,
       variants: {
         shadow: {
-          boxShadow: 2,
-        },
-      },
+          boxShadow: 2
+        }
+      }
     },
     Heading: {
       lineHeight: "heading",
       fontWeight: "heading",
       fontFamily: "heading",
-      fontSize: 5,
+      fontSize: 5
     },
     Text: {
       lineHeight: "body",
       whiteSpace: "pre-wrap",
-      fontFamily: "body",
-    },
-  },
-}
+      fontFamily: "body"
+    }
+  }
+};

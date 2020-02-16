@@ -4,10 +4,6 @@ import { ThemeProvider, jsx, Box, Flex, Styled } from "theme-ui";
 import styled from "@emotion/styled";
 import { theme } from "../styles/theme";
 
-const AppBody = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
 console.warn(theme);
 
 export const Layout = ({ children }) => {
@@ -18,7 +14,7 @@ export const Layout = ({ children }) => {
           flexDirection: "column"
         }}
       >
-        <header sx={{ bg: "primary", py: [2, 3] }}>
+        <header sx={{ bg: "primary", py: [2, 3], boxShadow: 2}}>
           <Styled.h1 sx={{ color: "background", px: [2, 5] }}>
             UglyCauc.us
           </Styled.h1>
