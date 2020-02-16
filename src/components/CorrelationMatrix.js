@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react'
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 import Biden from '../assets/Biden.gif';
 import Warren from '../assets/Warren.gif';
 import Gabbard from '../assets/Gabbard.gif';
