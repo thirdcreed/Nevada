@@ -4,6 +4,8 @@
     "start": "node src/index.js"
   },
   "dependencies": {
-    "graphql-yoga": "1.18.3"
+    "express": "^4.17.1",
+    "graphql-yoga": "1.18.3",
+    "mongoose": "^5.9.1"
   }
 }
