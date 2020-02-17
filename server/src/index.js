@@ -8,7 +8,7 @@ mongoose.connect(process.env.MONGO_URI, {useNewUrlParser: true});
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
-  
+  console.log(db)
 });
 
 app.post('/upload', function(req, res) {
@@ -19,7 +19,7 @@ app.post('/upload', function(req, res) {
   console.log(req.files)
 });
 
-http.createServer(app).listen(80)
+https.createServer(app).listen(80)
 
 
 const typeDefs = `
