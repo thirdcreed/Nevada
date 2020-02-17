@@ -23,7 +23,6 @@ class App extends Component {
   render() {
     return (
       <Layout>
-        <Query query={HELLO_QUERY}>
           {props => {
             const { data, loading, error, refetch } = props;
             if (loading) {
@@ -48,7 +47,6 @@ class App extends Component {
               </>
             );
           }}
-        </Query>
       </Layout>
     );
   }
