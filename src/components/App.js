@@ -1,6 +1,4 @@
 import React, { Component } from "react";
-import { gql } from "apollo-boost";
-import { Query } from "react-apollo";
 // import "../styles/App.css";
 import { Box } from "theme-ui";
 import { Layout } from "./Layout";
@@ -55,11 +53,5 @@ class App extends Component {
     );
   }
 }
-
-const HELLO_QUERY = gql`
-  query HelloQuery($name: String) {
-    hello(name: $name)
-  }
-`;
 
 export default App;

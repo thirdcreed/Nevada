@@ -1,2 +1,2 @@
 web: npm start
-api: node server/src/index.js
+api: npm install && node server/src/index.js
