@@ -1,9 +1,11 @@
 const colors = {
-  blue: "#2071b5",
+  blue: "#1A82BD",
   black: "#000",
   white: "#fff",
   text: "#202124",
   secondary: "#1E2B39",
+  error: "#ef3a42",
+  warning: "#F2EE52",
   muted: "#f1f3f4",
   gray: {
     "1": "hsl(0,0%,32%)",
@@ -26,6 +28,27 @@ const fonts = {
   ...fontFamilies,
   body: fontFamilies.serif,
   heading: fontFamilies.serif
+};
+
+const primaryButtonStyle = {
+  display: "inline-block",
+  fontFamily: "sans",
+  fontSize: 1,
+  border: "2px solid",
+  borderColor: "gray.1",
+  px: 2,
+  py: 1,
+  m: 2,
+  cursor: "pointer",
+  outline: "inherit",
+  color: "white",
+  bg: "gray.1",
+  // boxShadow: 1,
+  borderRadius: 3,
+  ":disabled": {
+    bg: "gray.5",
+    color: "muted"
+  }
 };
 
 export const theme = {
@@ -129,47 +152,27 @@ export const theme = {
       textAlign: "left",
       borderBottomStyle: "solid",
       borderBottomWidth: "1px",
+      borderBottomColor: "gray.1",
       px: 1
     },
     td: {
       textAlign: "left",
       borderBottomStyle: "solid",
       borderBottomWidth: "1px",
+      borderBottomColor: "gray.1",
       px: 1
+    }
+  },
+  buttons: {
+    primary: primaryButtonStyle,
+    outline: {
+      ...primaryButtonStyle,
+      color: primaryButtonStyle.borderColor,
+      bg: "background",
     }
   },
   /* This section needs to be updated for theme-ui's newer interface */
   componentStyles: {
-    Button: {
-      display: "inline-block",
-      background: "none",
-      fontFamily: "sans",
-      fontSize: 2,
-
-      border: "none",
-      py: 3,
-      px: 3,
-      mx: 1,
-      my: 2,
-      cursor: "pointer",
-      outline: "inherit",
-      color: "background",
-      bg: "primary",
-      boxShadow: 2,
-
-      borderRadius: 3,
-      ":disabled": {
-        bg: "gray.5",
-        color: "muted"
-      },
-      variants: {
-        outline: {
-          color: "primary",
-          bg: "background",
-          boxShadow: 1
-        }
-      }
-    },
     Card: {
       p: 2,
       m: 1,

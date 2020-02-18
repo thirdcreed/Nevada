@@ -10,9 +10,9 @@ const boolToString = b => (b ? "Yes" : "No");
 
 export const PrecinctTable = ({ data = mockData }) => {
   const { name, result } = data;
-  const [showVotes, setShowVotes] = React.useState(true);
-  const [showRules, setShowRules] = React.useState(true);
-  const [showIssues, setShowIssues] = React.useState(true);
+  const [showVotes, setShowVotes] = React.useState(false);
+  const [showRules, setShowRules] = React.useState(false);
+  const [showIssues, setShowIssues] = React.useState(false);
 
   // TODO: consider making these toggles in each section and passing in the raw setter
   // This way we could use useEffect() to set the initial show state based on local logic
@@ -62,7 +62,7 @@ const SectionHeader = ({ title, subtitle = "", toggleShow, show }) => {
           <Styled.h4>{subtitle}</Styled.h4>
         </Styled.th>
         <Styled.th colSpan="3" sx={{textAlign: "right"}}>
-          <Button onClick={toggleShow}>{show ? "Hide" : "Show"}</Button>
+          <Button variant={show ? "outline" : "primary"} onClick={toggleShow}>{show ? "Hide" : "Show"}</Button>
         </Styled.th>
       </Styled.tr>
     </thead>

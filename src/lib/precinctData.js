@@ -6,33 +6,34 @@ const candidates = {
   amy: "Klobuchar",
   bernie: "Sanders",
   mike: "Bloomberg"
-}
+};
 
 const candidateKeys = Object.keys(candidates);
-console.warn(candidateKeys)
+
 /* TODO: unmock */
 const candidateVotes = _csvRow =>
   candidateKeys.reduce((acc, key) => {
-    console.log(key, acc)
-    return ({
+    return {
       ...acc,
       [key]: Math.floor(Math.random() * 1000)
-    })
+    };
   }, {});
 
 const awardedSDEs = _csvRow =>
-  candidateKeys.reduce((acc, key) => ({
-    ...acc,
-    [key]: Math.floor(Math.random() * 100)
-  }), {});
-
+  candidateKeys.reduce(
+    (acc, key) => ({
+      ...acc,
+      [key]: Math.floor(Math.random() * 100)
+    }),
+    {}
+  );
 
 export const precinctData = () => ({
   name: "Precinct X",
   result: precinctResult()
 });
 
-export const candidateDisplayName = (key) => candidates[key]
+export const candidateDisplayName = key => candidates[key];
 
 const precinctResult = row => {
   const firstRoundVotes = candidateVotes(row);
