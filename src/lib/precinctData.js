@@ -1,14 +1,3 @@
-import parseCsv from "csv-parse/lib/sync";
-
-export const massageResult = csv => {
-  const jsResults = parseCsv(csv, {
-    columns: true,
-    skip_empty_lines: true
-  });
-  // ...
-  return jsResults;
-};
-
 const candidates = {
   liz: "Warren",
   pete: "BootEdgeEdge",

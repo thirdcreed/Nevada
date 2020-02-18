@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Box } from "theme-ui";
-import { massageResult } from "../lib/precinctData";
+import { parseData } from "../lib/csvParser";
 import { Layout } from "./Layout";
 import { Main } from "./Main";
 
@@ -16,7 +16,8 @@ const App = () => {
     request.onload = function() {
       if (this.status >= 200 && this.status < 400) {
         // Success!
-        var data = massageResult(this.response);
+        var data = parseData(this.response);
+        console.log(data);
         setData(data);
         setLoading(false);
       } else {

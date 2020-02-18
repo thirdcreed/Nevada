@@ -8,7 +8,8 @@ import CorrelationMatrix from "./CorrelationMatrix";
 import { PrecinctTable } from "./PrecinctTable";
 
 export const Main = ({ data }) => {
-  console.log("DATA:", data);
+  // const collectedIssues = data.precinctResults.flatMap(p => p.issues).reduce;
+
   return (
     <Flex
       sx={{
