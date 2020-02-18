@@ -1,28 +1,7 @@
 /** @jsx jsx */
 //   ^ Required to use the `sx` prop: https://theme-ui.com/sx-prop
-import { ThemeProvider, jsx, Box, Flex, Styled } from "theme-ui";
-import styled from "@emotion/styled";
+import { ThemeProvider, jsx, Flex, Styled } from "theme-ui";
 import { theme } from "../styles/theme";
-
-console.warn(theme);
-
-var request = new XMLHttpRequest();
-request.open('GET', 'https://nevada-cranks.herokuapp.com/results', true);
-
-request.onload = function() {
-  if (this.status >= 200 && this.status < 400) {
-    // Success!
-    var resp = this.response;
-    console.log(resp);
-  } else {
-    console.warn('server error')
-
-  }
-};
-request.onerror = function() {
-  console.warn('didn\'t get it')
-};
-request.send();
 
 export const Layout = ({ children }) => {
   return (
@@ -32,14 +11,14 @@ export const Layout = ({ children }) => {
           flexDirection: "column"
         }}
       >
-        <header sx={{ bg: "primary", py: [2, 3], boxShadow: 2}}>
-          <Styled.h1 sx={{ color: "background", px: [2, 5] }}>
+        <header sx={{ bg: "muted", py: [2, 3], boxShadow: 2 }}>
+          <Styled.h1
+            sx={{ textDecoration: "underline", color: "gray.1", px: [2, 5] }}
+          >
             UglyCauc.us
           </Styled.h1>
           <marquee scrollamount="10">
-            <Styled.p sx={{ color: "background" }}>
-              PPP Cranks Investigate ...
-            </Styled.p>
+            <Styled.p sx={{ color: "gray.2" }}>Cranks Investigate ...</Styled.p>
           </marquee>
         </header>
         <main
@@ -49,19 +28,7 @@ export const Layout = ({ children }) => {
             width: "100%"
           }}
         >
-          <Box
-            sx={{
-              width: ["100%", "720px"],
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-              alignItems: "center",
-              px: [2, 3, 4],
-              m: "0 auto"
-            }}
-          >
-            {children}
-          </Box>
+          {children}
         </main>
         <footer
           sx={{ bg: "primary", py: [2, 3], px: [2, 5], color: "background" }}

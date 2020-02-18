@@ -1,60 +1,48 @@
 import React, { Component } from "react";
-// import "../styles/App.css";
 import { Box } from "theme-ui";
 import styled from "@emotion/styled";
-// import "../styles/App.css";
 import { Layout } from "./Layout";
-import Nevada from "./Nevada";
-import Sankey from "./CorrelationSankey";
-import CorrelationMatrix from "./CorrelationMatrix";
-import { PrecinctTable } from "./PrecinctTable";
+import { Main } from "./Main";
 
-const Title = styled.h1`
-  font-size: 35px;
-  display: flex;
-  justify-content: center;
-  margin: 10px;
-`;
-const SubTitle = styled.div`
-  font-size: 14px;
-  display: flex;
-  justify-content: center;
-`;
+const App = () => {
+  const [data, setData] = React.useState(null);
+  const [loading, setLoading] = React.useState(true);
+  const [loadError, setLoadError] = React.useState(false);
 
-class App extends Component {
-  render() {
-    return (
-      <Layout>
-          {props => {
-            const { data, loading, error, refetch } = props;
-            if (loading) {
-              return <div>Loading</div>;
-            }
+  React.useEffect(() => {
+    var request = new XMLHttpRequest();
+    request.open("GET", "https://nevada-cranks.herokuapp.com/results", true);
 
-            if (error) {
-              return <div>An unexpected error occurred</div>;
-            }
+    request.onload = function() {
+      if (this.status >= 200 && this.status < 400) {
+        // Success!
+        var resp = this.response;
+        setData(resp);
+        setLoading(false);
+        // console.log(resp);
+      } else {
+        setLoadError(true);
+        setLoading(false);
+        console.warn("server error");
+      }
+    };
+    request.onerror = function() {
+      console.warn("didn't get it");
+    };
+    request.send();
+  });
 
-            return (
-              <>
-                <Box sx={{ p: 1, border: "1px solid", borderColor: "primary" }}>
-                  {/* <Nevada data={[1, 2, 3]}></Nevada> */}
-                </Box>
-                <Box sx={{ mt: 2, mx: "auto" }}>
-                  <CorrelationMatrix></CorrelationMatrix>
-                </Box>
-                <Box sx={{ mt: 2, mx: "auto" }}>
-                  <Sankey></Sankey>
-                </Box>
-                <Box sx={{ mt: 2, mx: "auto", width: "100%" }}>
-                  <PrecinctTable></PrecinctTable>
-                </Box>
-              </>
-            );
-          }}
-      </Layout>
-    );
-  }
-}
+  return (
+    <Layout>
+      {loading ? (
+        <Box>Loading...</Box>
+      ) : loadError ? (
+        <div>An unexpected error occurred</div>
+      ) : (
+        <Main data={data} />
+      )}
+    </Layout>
+  );
+};
 
 export default App;
