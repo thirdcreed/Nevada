@@ -4,6 +4,7 @@
     "@emotion/core": "^10.0.27",
     "@emotion/styled": "^10.0.27",
     "apollo-boost": "0.4.7",
+    "csv-parse": "^4.8.5",
     "d3": "^5.15.0",
     "d3-sankey": "^0.12.3",
     "graphql": "0.13.2",
