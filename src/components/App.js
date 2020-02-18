@@ -17,6 +17,7 @@ const App = () => {
       if (this.status >= 200 && this.status < 400) {
         // Success!
         var data = massageResult(this.response);
+        console.log({data})
         setData(data);
         setLoading(false);
       } else {

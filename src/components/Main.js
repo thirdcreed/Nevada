@@ -32,7 +32,7 @@ export const Main = ({ data }) => {
           p: [2, 3]
         }}
       >
-        {/* <Nevada data={[1, 2, 3]}></Nevada> */}
+        <Nevada data={[1, 2, 3]}></Nevada> 
         <PrecinctTable />
       </Box>
       {/* Right panel */}
