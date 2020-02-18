@@ -7,10 +7,8 @@ import Sankey from "./CorrelationSankey";
 import CorrelationMatrix from "./CorrelationMatrix";
 import { PrecinctTable } from "./PrecinctTable";
 
-const debug = false;
-
 export const Main = ({ data }) => {
-  console.warn("RENDERING MAIN");
+  console.log("DATA:", data);
   return (
     <Flex
       sx={{

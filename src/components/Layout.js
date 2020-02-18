@@ -11,7 +11,7 @@ export const Layout = ({ children }) => {
           flexDirection: "column"
         }}
       >
-        <header sx={{ bg: "muted", py: [2, 3], boxShadow: 2 }}>
+        <header sx={{ bg: "muted", py: [2, 3] }}>
           <Styled.h1
             sx={{ textDecoration: "underline", color: "gray.1", px: [2, 5] }}
           >
