@@ -1,11 +1,13 @@
 import React, { Component } from "react";
 // import "../styles/App.css";
 import { Box } from "theme-ui";
+import styled from "@emotion/styled";
+// import "../styles/App.css";
 import { Layout } from "./Layout";
 import Nevada from "./Nevada";
 import Sankey from "./CorrelationSankey";
 import CorrelationMatrix from "./CorrelationMatrix";
-import styled from "@emotion/styled";
+import { PrecinctTable } from "./PrecinctTable";
 
 const Title = styled.h1`
   font-size: 35px;
@@ -43,6 +45,9 @@ class App extends Component {
                 </Box>
                 <Box sx={{ mt: 2, mx: "auto" }}>
                   <Sankey></Sankey>
+                </Box>
+                <Box sx={{ mt: 2, mx: "auto", width: "100%" }}>
+                  <PrecinctTable></PrecinctTable>
                 </Box>
               </>
             );
