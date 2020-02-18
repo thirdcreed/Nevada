@@ -6,6 +6,24 @@ import { theme } from "../styles/theme";
 
 console.warn(theme);
 
+var request = new XMLHttpRequest();
+request.open('GET', 'https://nevada-cranks.herokuapp.com/results', true);
+
+request.onload = function() {
+  if (this.status >= 200 && this.status < 400) {
+    // Success!
+    var resp = this.response;
+    console.log(resp);
+  } else {
+    console.warn('server error')
+
+  }
+};
+request.onerror = function() {
+  console.warn('didn\'t get it')
+};
+request.send();
+
 export const Layout = ({ children }) => {
   return (
     <ThemeProvider theme={theme}>

@@ -1,6 +1,5 @@
 import React, { Component } from "react";
-import { gql } from "apollo-boost";
-import { Query } from "react-apollo";
+// import "../styles/App.css";
 import { Box } from "theme-ui";
 import styled from "@emotion/styled";
 // import "../styles/App.css";
@@ -26,7 +25,6 @@ class App extends Component {
   render() {
     return (
       <Layout>
-        <Query query={HELLO_QUERY}>
           {props => {
             const { data, loading, error, refetch } = props;
             if (loading) {
@@ -40,7 +38,7 @@ class App extends Component {
             return (
               <>
                 <Box sx={{ p: 1, border: "1px solid", borderColor: "primary" }}>
-                  <Nevada data={[1, 2, 3]}></Nevada>
+                  {/* <Nevada data={[1, 2, 3]}></Nevada> */}
                 </Box>
                 <Box sx={{ mt: 2, mx: "auto" }}>
                   <CorrelationMatrix></CorrelationMatrix>
@@ -54,16 +52,9 @@ class App extends Component {
               </>
             );
           }}
-        </Query>
       </Layout>
     );
   }
 }
-
-const HELLO_QUERY = gql`
-  query HelloQuery($name: String) {
-    hello(name: $name)
-  }
-`;
 
 export default App;
