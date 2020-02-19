@@ -32,7 +32,10 @@ const App = () => {
     request.send();
   };
 
+  
+
   React.useEffect(fetchData, []);
+
 
   return (
     <Layout>
