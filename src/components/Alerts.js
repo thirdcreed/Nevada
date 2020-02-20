@@ -85,7 +85,7 @@ export const Alerts = ({ data }) => {
 
   const allAlerts = groupedIssues(alerts, "error");
   const allWarnings = groupedIssues(warnings, "warning");
-  const allIssues = allAlerts.concat(allWarnings);
+  const allIssues = allAlerts.concat(allWarnings).slice(0, 500);
   console.log(allIssues);
   return (
     <Flex
