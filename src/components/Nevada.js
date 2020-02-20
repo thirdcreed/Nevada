@@ -1,11 +1,11 @@
 import React, { useRef, useEffect } from "react";
 import * as d3 from "d3";
 import { Box } from "theme-ui";
-import { AppContext } from "./AppContext";
+import { UserContext } from "./Context";
 
 export default function Nevada() {
   const { setSelectedPrecinct, selectedPrecinct } = React.useContext(
-    AppContext
+    UserContext
   );
 
   const [nevada, setNevada] = React.useState(null);

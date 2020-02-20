@@ -1,5 +1,4 @@
 /** @jsx jsx */
-import React from "react";
 import { jsx, Flex, Box } from "theme-ui";
 import Nevada from "./Nevada";
 import { Alerts } from "./Alerts";

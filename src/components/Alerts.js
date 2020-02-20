@@ -1,7 +1,7 @@
 /** @jsx jsx */
 import React from "react";
 import { jsx, Flex, Box, Styled } from "theme-ui";
-import { AppContext } from "./AppContext";
+import { UserContext } from "./Context";
 
 // 12 viable_loss          logical: if a candidate was viable in 1st round and lost votes going to final round
 // 13 nonviable_no_realign logical: if a nonviable candidate from 1st round did not realign in final round
@@ -78,7 +78,7 @@ export const Alert = ({ type, alert, onClick }) => {
 };
 
 export const Alerts = () => {
-  const { data, setSelectedPrecinct } = React.useContext(AppContext);
+  const { data, setSelectedPrecinct } = React.useContext(UserContext);
   const { alerts, warnings } = data;
 
   const allAlerts = groupedIssues(alerts, "alert");

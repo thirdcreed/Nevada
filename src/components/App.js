@@ -3,7 +3,7 @@ import { Box } from "theme-ui";
 import { massageResult } from "../lib/precinctData";
 import { Layout } from "./Layout";
 import { Main } from "./Main";
-import { AppContext } from "./AppContext";
+import { UserContext } from "./Context";
 
 const App = () => {
   const [data, setData] = React.useState(null);
@@ -38,7 +38,7 @@ const App = () => {
   React.useEffect(fetchData, []);
 
   return (
-    <AppContext.Provider
+    <UserContext.Provider
       value={{ data, selectedPrecinct, setSelectedPrecinct }}
     >
       <Layout>
@@ -50,7 +50,7 @@ const App = () => {
           <Box>An unexpected error occurred</Box>
         )}
       </Layout>
-    </AppContext.Provider>
+    </UserContext.Provider>
   );
 };
 
