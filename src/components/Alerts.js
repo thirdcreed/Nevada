@@ -70,7 +70,7 @@ export const Alert = ({ type, alert, onClick }) => {
       }}
     >
       <Styled.h4 sx={{ color, my: 0 }}>
-        Precinct {precinct.precinctId}
+        Precinct {precinct["precinct_full"]}
       </Styled.h4>
       <Styled.p sx={{ color, mb: 0 }}>{alert.message}</Styled.p>
     </Box>
