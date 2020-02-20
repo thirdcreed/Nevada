@@ -12,8 +12,8 @@ export const massageResult = csv => {
     let precinctGroup = _.groupBy(county, 'precinct');
       precinctGroup = _.reduce(precinctGroup, function(precinctResult, precinct, key) {
         let candidate = _.groupBy(precinct, 'candidate');
-          precinctResult[key] = _.reduce(candidate, function (candidateResult, c, canidateKey){
-            candidateResult[canidateKey] = c[0]; // In the future we can reduce this to a sparser model here.
+          precinctResult[key] = _.reduce(candidate, function (candidateResult, c, candidateKey){
+            candidateResult[candidateKey] = c[0]; // In the future we can reduce this to a sparser model here.
             return candidateResult;
           }, {})  
         return precinctResult;
@@ -29,6 +29,8 @@ export const massageResult = csv => {
   function toWarnings(row){
     return row;  //adapt model however we like.
   }
+
+
  
   function isFalse(row,prop){
     if(!row[prop]){
@@ -47,8 +49,8 @@ export const massageResult = csv => {
   let fewerFinalVotes = _.filter(jsResults, row => !isFalse(row,'fewer_final_votes')).map(toWarnings);
   let extraDelGiven = _.filter(jsResults, row => !isFalse(row,'extra_del_given')).map(toWarnings);
 
-  let alerts = [viableLoss, moreFinalVotes, nonviableNoRealign];
-  let warnings = [delCountsDiff, hasAlphaShift, fewerFinalVotes, extraDelGiven];
+  let alerts = {viableLoss, moreFinalVotes, nonviableNoRealign}
+  let warnings = {delCountsDiff, hasAlphaShift, fewerFinalVotes, extraDelGiven};
 
 
   return {electionData, alerts, warnings};

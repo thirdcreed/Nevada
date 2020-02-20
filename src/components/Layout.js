@@ -11,15 +11,21 @@ export const Layout = ({ children }) => {
           flexDirection: "column"
         }}
       >
-        <header sx={{ bg: "muted", py: [2, 3] }}>
+        <header sx={{ bg: "background", p: [2, 3], textAlign: "center" }}>
           <Styled.h1
-            sx={{ textDecoration: "underline", color: "gray.1", px: [2, 5] }}
+            sx={{
+              textDecoration: "underline",
+              color: "gray.1",
+              px: [2, 5],
+              fontWeight: 4
+            }}
           >
             UglyCauc.us
           </Styled.h1>
-          <marquee scrollamount="10">
-            <Styled.p sx={{ color: "gray.2" }}>Cranks Investigate ...</Styled.p>
-          </marquee>
+
+          <Styled.h3 sx={{ color: "gray.2" }}>
+            Analyzing the Nevada Caucus results in real time
+          </Styled.h3>
         </header>
         <main
           sx={{

@@ -26,13 +26,14 @@ export const Main = ({ data }) => {
       {/* Center panel */}
       <Box
         sx={{
+          minWidth: "400px",
           borderLeft: "1px solid",
           borderColor: "gray.1",
           mt: [2, 0],
           p: [2, 3]
         }}
       >
-        <Nevada data={[1, 2, 3]}></Nevada> 
+        <Nevada data={[1, 2, 3]}></Nevada>
         <PrecinctTable />
       </Box>
       {/* Right panel */}

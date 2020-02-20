@@ -1,173 +1,202 @@
-import React, {
-    useRef,
-    useEffect
-} from 'react'
-import * as d3 from 'd3';
-import {
-    Box
-} from "theme-ui";
-
+import React, { useRef, useEffect } from "react";
+import * as d3 from "d3";
+import { Box } from "theme-ui";
+import { AppContext } from "./AppContext";
 
 export default function Nevada() {
+  const { setSelectedPrecinct, selectedPrecinct } = React.useContext(
+    AppContext
+  );
 
-    const [nevada, setNevada] = React.useState(null);
-    const [loading, setLoading] = React.useState(true);
-    const [_loadError, setLoadError] = React.useState(false);
+  const [nevada, setNevada] = React.useState(null);
+  const [loading, setLoading] = React.useState(true);
+  const [_loadError, setLoadError] = React.useState(false);
 
-    const fetchGeoJson = () => {
-        var request = new XMLHttpRequest();
-        request.open("GET", "https://nevada-cranks.herokuapp.com/nevada", true);
+  const fetchGeoJson = () => {
+    var request = new XMLHttpRequest();
+    request.open("GET", "https://nevada-cranks.herokuapp.com/nevada", true);
 
-        request.onload = function() {
-            if (this.status >= 200 && this.status < 400) {
-                // Success!
-                var geojson = this.response;
-                console.log()
-                setNevada({
-                    geojson
-                });
-                setLoading(false);
-            } else {
-                setLoadError(true);
-                setLoading(false);
-                console.warn("server error");
-            }
-        };
-        request.onerror = function() {
-            console.warn("Nevada JSON not loading");
-        };
-        request.send();
+    request.onload = function() {
+      if (this.status >= 200 && this.status < 400) {
+        // Success!
+        var geojson = this.response;
+        console.log();
+        setNevada({
+          geojson
+        });
+        setLoading(false);
+      } else {
+        setLoadError(true);
+        setLoading(false);
+        console.warn("server error");
+      }
     };
+    request.onerror = function() {
+      console.warn("Nevada JSON not loading");
+    };
+    request.send();
+  };
 
-    React.useEffect(fetchGeoJson, []);
+  React.useEffect(fetchGeoJson, []);
 
+  let nevadaD3Container = useRef(null);
 
-    let nevadaD3Container = useRef(null);
+  useEffect(() => {
+    console.log({
+      loading,
+      nevada: !!nevada,
+      nevadaD3Container: nevadaD3Container.current
+    });
+    if (!!nevada && !!nevadaD3Container.current) {
+      console.log({
+        nevada
+      });
 
-    useEffect(
-        () => {
-            console.log({
-                loading,
-                nevada: !!nevada,
-                nevadaD3Container: nevadaD3Container.current
-            })
-            if (!!nevada && !!nevadaD3Container.current) {
-                console.log('here?')
-                console.log({
-                    nevada
-                });
+      let nevadaJson = JSON.parse(nevada.geojson);
+      console.log({
+        nevadaJson
+      });
 
-                let nevadaJson = JSON.parse(nevada.geojson);
-                console.log({
-                    nevadaJson
-                })
+      const svg = d3.select(nevadaD3Container.current);
 
-                const svg = d3.select(nevadaD3Container.current);
+      let width = 600;
+      let height = 600;
 
+      var projection = d3
+        .geoAlbers()
+        .scale(4500)
+        .rotate([116.4194, 0]) //latitude
+        .center([0, 38.8026]) //longitude
+        .translate([width / 2, height / 2]);
 
-                let width = 600;
-                let height = 600;
+      var _geoGenerator = d3
+        .geoPath()
+        .pointRadius(5)
+        .projection(projection);
 
-                var projection = d3.geoAlbers()
-                    .scale(4500)
-                    .rotate([116.4194, 0]) //latitude
-                    .center([0, 38.8026]) //longitude
-                    .translate([width / 2, height / 2]);
+      function reset() {
+        setSelectedPrecinct(null);
+        nevadaPath
+          .transition()
+          .duration(750)
+          .attr(
+            "transform",
+            "translate(" +
+              width / 2 +
+              "," +
+              height / 2 +
+              ")scale(" +
+              1 +
+              ")translate(" +
+              -300 +
+              "," +
+              -300 +
+              ")"
+          )
+          .style("stroke-width", 0.2 + "px");
+      }
+      d3.select("button").on("click", reset);
 
+      function clicked(d, t, e) {
+        var path = d3.geoPath().projection(projection);
+        var centroid = path.centroid(d);
+        let x = centroid[0];
+        let y = centroid[1];
+        let largestDimension = Math.max(
+          Math.abs(path.bounds(d)[1][1] - path.bounds(d)[0][1]),
+          Math.abs(path.bounds(d)[1][0] - path.bounds(d)[0][0])
+        );
+        var scale = d3.scaleLinear([0, largestDimension], [0.0, 4.0]);
+        let k = scale(50);
 
-                var geoGenerator = d3.geoPath()
-                    .pointRadius(5)
-                    .projection(projection);
+        nevadaPath
+          .transition()
+          .duration(750)
+          .attr(
+            "transform",
+            "translate(" +
+              width / 2 +
+              "," +
+              height / 2 +
+              ")scale(" +
+              k +
+              ")translate(" +
+              -x +
+              "," +
+              -y +
+              ")"
+          )
+          .style("stroke-width", 1.5 / k + "px");
+      }
 
+      function handleMouseOver(d, t, e) {
+        var path = d3.geoPath().projection(projection);
+        var centroid = path.centroid(d);
+        let x = centroid[0];
+        let y = centroid[1];
+        let k = 4;
 
+        d3.select(this).attr("fill", "url(#diagonal-stripe-2)");
+      }
 
-                function reset() {
-                    nevadaPath.transition()
-                        .duration(750)
-                        .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + 1 + ")translate(" + -300 + "," + -300 + ")")
-                        .style("stroke-width", .2 + "px")
-                }
-                d3.select("button")
-                    .on("click", reset);
+      function handleMouseOut(d, t, e) {
+        d3.select(this).attr("fill", "white");
+      }
 
+      let nevadaPath = svg
+        .append("g")
+        .selectAll("path")
+        .data(nevadaJson.features)
+        .enter()
+        .append("path")
+        .attr("d", d3.geoPath().projection(projection));
+      nevadaPath
+        .attr("stroke", "black")
+        .attr("stroke-width", ".5px")
+        .attr("fill", "white")
+        .on("mouseover", handleMouseOver)
+        .on("mouseout", handleMouseOut)
+        .on("click", clicked);
+    }
+  }, [loading, nevada, nevadaD3Container.current]);
 
-                function clicked(d, t, e) {
-                    var path = d3.geoPath()
-                        .projection(projection);
-                    var centroid = path.centroid(d);
-                    let x = centroid[0];
-                    let y = centroid[1];
-                    let largestDimension = Math.max(
-                        Math.abs(path.bounds(d)[1][1] - path.bounds(d)[0][1]), 
-                        Math.abs(path.bounds(d)[1][0] - path.bounds(d)[0][0])
-                    );
-                    var scale = d3.scaleLinear([0, largestDimension], [0.0, 4.0]);
-                    let k = scale(50);
-
-                    nevadaPath.transition()
-                        .duration(750)
-                        .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
-                        .style("stroke-width", 1.5 / k + "px");
-                }
-
-                function handleMouseOver(d, t, e) {
-                    var path = d3.geoPath()
-                        .projection(projection);
-                    var centroid = path.centroid(d);
-                    let x = centroid[0];
-                    let y = centroid[1];
-                    let k = 4;
-
-                    d3.select(this).attr('fill', "url(#diagonal-stripe-2)");
-                }
-
-                function handleMouseOut(d, t, e) {
-                    d3.select(this)
-                        .attr('fill', "white")
-                }
-
-                let nevadaPath = svg
-                    .append("g")
-                    .selectAll("path")
-                    .data(nevadaJson.features)
-                    .enter()
-                    .append("path")
-                    .attr("d", d3.geoPath()
-                        .projection(projection));
-                nevadaPath.attr('stroke', "black")
-                    .attr('stroke-width', '.5px')
-                    .attr("fill", "white")
-                    .on('mouseover', handleMouseOver)
-                    .on("mouseout", handleMouseOut)
-                    .on("click", clicked)
-
-            }
-        },
-        [loading, nevada, nevadaD3Container.current])
-
-    return (
+  return (
     <React.Fragment>
-        <button style={{ position:'relative', top:50, left:500}}>ZOOM OUT</button>
-    <div>
-    {loading ? (
-       <Box>Loading...</Box>
-     ) : nevada ? (
-        <svg
-        className="d3-component"
-        width={600}
-        height={600}
-        ref={nevadaD3Container}
-    >
-    <defs> <pattern id="diagonal-stripe-2" patternUnits="userSpaceOnUse" width="10" height="10">
-     <image xlinkHref="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxMCcgaGVpZ2h0PScxMCc+CiAgPHJlY3Qgd2lkdGg9JzEwJyBoZWlnaHQ9JzEwJyBmaWxsPSd3aGl0ZScvPgogIDxwYXRoIGQ9J00tMSwxIGwyLC0yCiAgICAgICAgICAgTTAsMTAgbDEwLC0xMAogICAgICAgICAgIE05LDExIGwyLC0yJyBzdHJva2U9J2JsYWNrJyBzdHJva2Utd2lkdGg9JzInLz4KPC9zdmc+" x="0" y="0" width="10" height="10"/>  
-      </pattern> 
-    </defs>
-    </svg>
-     ) : (
-      <Box>An unexpected error occurred</Box>
-     )}
-    </div>
+      <button style={{ position: "relative", top: 50, left: 500 }}>
+        ZOOM OUT
+      </button>
+      <div>
+        {loading ? (
+          <Box>Loading...</Box>
+        ) : nevada ? (
+          <svg
+            className="d3-component"
+            width={600}
+            height={600}
+            ref={nevadaD3Container}
+          >
+            <defs>
+              {" "}
+              <pattern
+                id="diagonal-stripe-2"
+                patternUnits="userSpaceOnUse"
+                width="10"
+                height="10"
+              >
+                <image
+                  xlinkHref="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxMCcgaGVpZ2h0PScxMCc+CiAgPHJlY3Qgd2lkdGg9JzEwJyBoZWlnaHQ9JzEwJyBmaWxsPSd3aGl0ZScvPgogIDxwYXRoIGQ9J00tMSwxIGwyLC0yCiAgICAgICAgICAgTTAsMTAgbDEwLC0xMAogICAgICAgICAgIE05LDExIGwyLC0yJyBzdHJva2U9J2JsYWNrJyBzdHJva2Utd2lkdGg9JzInLz4KPC9zdmc+"
+                  x="0"
+                  y="0"
+                  width="10"
+                  height="10"
+                />
+              </pattern>
+            </defs>
+          </svg>
+        ) : (
+          <Box>An unexpected error occurred</Box>
+        )}
+      </div>
     </React.Fragment>
-    );
-     
-  }
+  );
+}
