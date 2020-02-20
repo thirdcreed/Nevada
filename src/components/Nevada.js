@@ -46,27 +46,17 @@ export default function Nevada() {
 
     useEffect(
         () => {
-            console.log({
-                loading,
-                nevada: !!nevada,
-                nevadaD3Container: nevadaD3Container.current
-            })
+       
             if (!!nevada && !!nevadaD3Container.current) {
-                console.log('here?')
-                console.log({
-                    nevada
-                });
-
+          
                 let nevadaJson = JSON.parse(nevada.geojson);
-                console.log({
-                    nevadaJson
-                })
-
                 const svg = d3.select(nevadaD3Container.current);
-
-
                 let width = 600;
                 let height = 600;
+
+                let alerts = ["320113", "3202304","320219","320276","320136","320138","320271","320317423"];
+                let selectedComponent = false;
+                let selected = '';
 
                 var projection = d3.geoAlbers()
                     .scale(4500)
@@ -74,22 +64,15 @@ export default function Nevada() {
                     .center([0, 38.8026]) //longitude
                     .translate([width / 2, height / 2]);
 
-
-                var geoGenerator = d3.geoPath()
-                    .pointRadius(5)
-                    .projection(projection);
-
-
-
                 function reset() {
                     nevadaPath.transition()
                         .duration(750)
                         .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + 1 + ")translate(" + -300 + "," + -300 + ")")
                         .style("stroke-width", .2 + "px")
                 }
+
                 d3.select("button")
                     .on("click", reset);
-
 
                 function clicked(d, t, e) {
                     var path = d3.geoPath()
@@ -104,7 +87,16 @@ export default function Nevada() {
                     var scale = d3.scaleLinear([0, largestDimension], [0.0, 4.0]);
                     let k = scale(50);
 
-                    nevadaPath.transition()
+                
+                    selectedComponent && selectedComponent
+                    .attr("fill", d => {console.log(alerts); return alerts.includes(d.properties.GEOID10) ? "red" : "white"})
+                        
+                    selected = d.properties.GEOID10;
+
+                    selectedComponent = d3.select(this).attr('fill','blue');
+                    
+                    nevadaPath
+                        .transition()
                         .duration(750)
                         .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
                         .style("stroke-width", 1.5 / k + "px");
@@ -117,13 +109,14 @@ export default function Nevada() {
                     let x = centroid[0];
                     let y = centroid[1];
                     let k = 4;
+                    console.log(d.properties.GEOID10);
 
                     d3.select(this).attr('fill', "url(#diagonal-stripe-2)");
                 }
 
                 function handleMouseOut(d, t, e) {
                     d3.select(this)
-                        .attr('fill', "white")
+                    .attr("fill", d => {console.log(alerts); return d.properties.GEOID10 === selected ? "blue" : alerts.includes(d.properties.GEOID10) ? "red" : "white"})
                 }
 
                 let nevadaPath = svg
@@ -134,13 +127,13 @@ export default function Nevada() {
                     .append("path")
                     .attr("d", d3.geoPath()
                         .projection(projection));
+
                 nevadaPath.attr('stroke', "black")
                     .attr('stroke-width', '.5px')
-                    .attr("fill", "white")
-                    .on('mouseover', handleMouseOver)
+                    .attr("fill", d => {console.log(alerts); return d.properties.GEOID10 === selected ? "blue" : alerts.includes(d.properties.GEOID10) ? "red" : "white"})
+                    .on('mouseover', handleMouseOver) 
                     .on("mouseout", handleMouseOut)
                     .on("click", clicked)
-
             }
         },
         [loading, nevada, nevadaD3Container.current])
