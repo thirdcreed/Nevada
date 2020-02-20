@@ -1,6 +1,7 @@
 import React from "react";
 import { Box } from "theme-ui";
 import { massageResult } from "../lib/precinctData";
+import { loadDevTools } from "../lib/devTools";
 import { Layout } from "./Layout";
 import { Main } from "./Main";
 import { UserContext } from "./Context";
@@ -23,6 +24,7 @@ const App = () => {
         console.log({ data });
         setData(data);
         setLoading(false);
+        loadDevTools({ data, csv: this.response });
       } else {
         setLoadError(true);
         setLoading(false);
