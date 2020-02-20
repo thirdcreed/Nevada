@@ -52,7 +52,7 @@ const alertColorTheme = {
 };
 const defaultColors = alertColorTheme.comment;
 
-export const Alert = ({ type, alert, onClick }) => {
+export const Alert = ({ type, alert, onClick, selected }) => {
   const { precinct } = alert;
   const { background, color } = alertColorTheme[type] || defaultColors;
   return (
@@ -70,18 +70,20 @@ export const Alert = ({ type, alert, onClick }) => {
       }}
     >
       <Styled.h4 sx={{ color, my: 0 }}>
-        Precinct {precinct["precinct_full"]}
+        {selected ? "*" : ""}Precinct {precinct["precinct_full"]}
       </Styled.h4>
       <Styled.p sx={{ color, mb: 0 }}>{alert.message}</Styled.p>
     </Box>
   );
 };
 
-export const Alerts = () => {
-  const { data, setSelectedPrecinct } = React.useContext(UserContext);
+export const Alerts = ({ data }) => {
+  const { selectedPrecinct, setSelectedPrecinct } = React.useContext(
+    UserContext
+  );
   const { alerts, warnings } = data;
 
-  const allAlerts = groupedIssues(alerts, "alert");
+  const allAlerts = groupedIssues(alerts, "error");
   const allWarnings = groupedIssues(warnings, "warning");
   const allIssues = allAlerts.concat(allWarnings);
   console.log(allIssues);
@@ -97,21 +99,22 @@ export const Alerts = () => {
       {allIssues.length === 0 ? (
         <Styled.p>Having a normal one</Styled.p>
       ) : (
-        allIssues.map(issue => {
+        allIssues.map((issue, i) => {
+          const precinctIdentifier = issue.precinct["precinct_full"];
           return (
             <Alert
+              selected={precinctIdentifier === selectedPrecinct}
               key={
                 /* Should maybe be the GEOID10 as unique id */
-                issue.precinct["row_id"] + issue.key
+                precinctIdentifier + issue.key + i
               }
               alert={issue}
               type={issue.type}
               onClick={() => {
-                const precinctId = issue.precinct["GEOID10"];
                 console.log(
-                  "focusing on precinct with the error- " + precinctId
+                  "focusing on precinct with the error- " + precinctIdentifier
                 );
-                setSelectedPrecinct(precinctId);
+                setSelectedPrecinct(precinctIdentifier);
               }}
             />
           );
