@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React from "react";
 import styled from "@emotion/styled";
 import Biden from "../assets/Biden.gif";
 import Warren from "../assets/Warren.gif";
@@ -35,7 +35,7 @@ const Matrix = styled.div`
   flex-direction: column;
 `;
 
-export default function CorrelationMatrix(props) {
+export default function CorrelationMatrix(_props) {
   let candidates = {
     BootEdgeEdge,
     Klobuchar,
@@ -62,6 +62,8 @@ export default function CorrelationMatrix(props) {
           <Cell />
           {header.map(cell => (
             <img
+              key={cell}
+              alt={cell}
               src={candidates[cell]}
               width="60px"
               height="60px"
@@ -77,6 +79,8 @@ export default function CorrelationMatrix(props) {
                 return i == 0 ? (
                   <Cell>
                     <img
+                      key={i}
+                      alt={cell}
                       src={candidates[row.name]}
                       width="60px"
                       height="60px"

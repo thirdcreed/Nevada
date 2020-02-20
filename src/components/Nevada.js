@@ -1,44 +1,43 @@
-import React, {
-    useRef,
-    useEffect
-} from 'react'
-import * as d3 from 'd3';
-import {
-    Box
-} from "theme-ui";
-
+import React, { useRef, useEffect } from "react";
+import * as d3 from "d3";
+import { Box } from "theme-ui";
+import { UserContext } from "./Context";
 
 export default function Nevada() {
+  const { setSelectedPrecinct, selectedPrecinct } = React.useContext(
+    UserContext
+  );
 
-    const [nevada, setNevada] = React.useState(null);
-    const [loading, setLoading] = React.useState(true);
-    const [_loadError, setLoadError] = React.useState(false);
+  const [nevada, setNevada] = React.useState(null);
+  const [loading, setLoading] = React.useState(true);
+  const [_loadError, setLoadError] = React.useState(false);
 
-    const fetchGeoJson = () => {
-        var request = new XMLHttpRequest();
-        request.open("GET", "https://nevada-cranks.herokuapp.com/nevada", true);
+  const fetchGeoJson = () => {
+    var request = new XMLHttpRequest();
+    request.open("GET", "https://nevada-cranks.herokuapp.com/nevada", true);
 
-        request.onload = function() {
-            if (this.status >= 200 && this.status < 400) {
-                // Success!
-                var geojson = this.response;
-                console.log()
-                setNevada({
-                    geojson
-                });
-                setLoading(false);
-            } else {
-                setLoadError(true);
-                setLoading(false);
-                console.warn("server error");
-            }
-        };
-        request.onerror = function() {
-            console.warn("Nevada JSON not loading");
-        };
-        request.send();
+    request.onload = function() {
+      if (this.status >= 200 && this.status < 400) {
+        // Success!
+        var geojson = this.response;
+        console.log();
+        setNevada({
+          geojson
+        });
+        setLoading(false);
+      } else {
+        setLoadError(true);
+        setLoading(false);
+        console.warn("server error");
+      }
     };
 
+    request.onerror = function() {
+        console.warn("Nevada JSON not loading");
+      };
+      request.send();
+    };
+  
     React.useEffect(fetchGeoJson, []);
 
 
@@ -75,6 +74,7 @@ export default function Nevada() {
                     .on("click", reset);
 
                 function clicked(d, t, e) {
+                    setSelectedPrecinct('test');
                     var path = d3.geoPath()
                         .projection(projection);
                     var centroid = path.centroid(d);
@@ -140,27 +140,41 @@ export default function Nevada() {
 
     return (
     <React.Fragment>
-        <button style={{ position:'relative', top:50, left:500}}>ZOOM OUT</button>
-    <div>
-    {loading ? (
-       <Box>Loading...</Box>
-     ) : nevada ? (
-        <svg
-        className="d3-component"
-        width={600}
-        height={600}
-        ref={nevadaD3Container}
-    >
-    <defs> <pattern id="diagonal-stripe-2" patternUnits="userSpaceOnUse" width="10" height="10">
-     <image xlinkHref="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxMCcgaGVpZ2h0PScxMCc+CiAgPHJlY3Qgd2lkdGg9JzEwJyBoZWlnaHQ9JzEwJyBmaWxsPSd3aGl0ZScvPgogIDxwYXRoIGQ9J00tMSwxIGwyLC0yCiAgICAgICAgICAgTTAsMTAgbDEwLC0xMAogICAgICAgICAgIE05LDExIGwyLC0yJyBzdHJva2U9J2JsYWNrJyBzdHJva2Utd2lkdGg9JzInLz4KPC9zdmc+" x="0" y="0" width="10" height="10"/>  
-      </pattern> 
-    </defs>
-    </svg>
-     ) : (
-      <Box>An unexpected error occurred</Box>
-     )}
-    </div>
+      <button style={{ position: "relative", top: 50, left: 500 }}>
+        ZOOM OUT
+      </button>
+      <div>
+        {loading ? (
+          <Box>Loading...</Box>
+        ) : nevada ? (
+          <svg
+            className="d3-component"
+            width={600}
+            height={600}
+            ref={nevadaD3Container}
+          >
+            <defs>
+              {" "}
+              <pattern
+                id="diagonal-stripe-2"
+                patternUnits="userSpaceOnUse"
+                width="10"
+                height="10"
+              >
+                <image
+                  xlinkHref="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxMCcgaGVpZ2h0PScxMCc+CiAgPHJlY3Qgd2lkdGg9JzEwJyBoZWlnaHQ9JzEwJyBmaWxsPSd3aGl0ZScvPgogIDxwYXRoIGQ9J00tMSwxIGwyLC0yCiAgICAgICAgICAgTTAsMTAgbDEwLC0xMAogICAgICAgICAgIE05LDExIGwyLC0yJyBzdHJva2U9J2JsYWNrJyBzdHJva2Utd2lkdGg9JzInLz4KPC9zdmc+"
+                  x="0"
+                  y="0"
+                  width="10"
+                  height="10"
+                />
+              </pattern>
+            </defs>
+          </svg>
+        ) : (
+          <Box>An unexpected error occurred</Box>
+        )}
+      </div>
     </React.Fragment>
-    );
-     
-  }
+  );
+}
