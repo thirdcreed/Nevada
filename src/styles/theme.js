@@ -188,7 +188,8 @@ export const theme = {
       lineHeight: "heading",
       fontWeight: "heading",
       fontFamily: "heading",
-      fontSize: 5
+      fontSize: 5,
+      borderBottom: "2px solid black",
     },
     Text: {
       lineHeight: "body",
