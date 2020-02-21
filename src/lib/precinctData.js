@@ -5,7 +5,7 @@ export const massageResult = csv => {
   const jsResults = parseCsv(csv, {
     columns: true,
     skip_empty_lines: true
-  });
+  }).slice(0,100);
   console.log({jsResults})
   let countyLevelGroup = _.groupBy(jsResults, 'county');
   let electionData = _.reduce(countyLevelGroup, function(result, county, countyKey) {

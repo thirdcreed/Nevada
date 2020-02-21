@@ -56,24 +56,39 @@ export const Alert = ({ type, alert, onClick, selected }) => {
   const { precinct } = alert;
   const { background, color } = alertColorTheme[type] || defaultColors;
   return (
-    <Box
-      onClick={onClick}
-      sx={{
-        mt: 2,
-        border: "2px solid",
-        borderColor: "black",
-        color,
-        px: 2,
-        pt: 1,
-        bg: background,
-        lineHeight: "1"
-      }}
-    >
-      <Styled.h4 sx={{ color, my: 0 }}>
-        {selected ? "*" : ""}Precinct {precinct["precinct_full"]}
-      </Styled.h4>
-      <Styled.p sx={{ color, mb: 0 }}>{alert.message}</Styled.p>
-    </Box>
+    // <Box
+    //   onClick={onClick}
+    //   sx={{
+    //     mt: 2,
+    //     border: "2px solid",
+    //     borderColor: "black",
+    //     color,
+    //     px: 2,
+    //     pt: 1,
+    //     bg: background,
+    //     lineHeight: "1"
+    //   }}
+    // >
+    //   <Styled.h4 sx={{ color, my: 0 }}>
+    //     {selected ? "*" : ""}Precinct {precinct["precinct_full"]}
+    //   </Styled.h4>
+    //   <Styled.p sx={{ color, mb: 0 }}>{alert.message}</Styled.p>
+    // </Box>
+    <div className={`card ${selected ? "selected" : ""}`} onClick={onClick} >
+  <div className="container">
+    <div className="top error">
+      <div className="title">Precinct {precinct["precinct_full"]}</div>
+    </div> 
+    <div className="bottom">
+        <div className="content-top">
+          <div className="error-type">Actually wrong</div>
+          <div className="icon">ICON</div>
+        </div>   
+    <div className="description">{alert.message}</div>
+    </div> 
+  
+  </div>
+</div>
   );
 };
 

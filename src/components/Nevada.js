@@ -2,8 +2,8 @@ import React, { useRef, useEffect } from "react";
 import * as d3 from "d3";
 import { Box } from "theme-ui";
 import { UserContext } from "./Context";
-
-export default function Nevada() {
+import _ from 'lodash';
+export default function Nevada(props) {
   const { setSelectedPrecinct, selectedPrecinct } = React.useContext(
     UserContext
   );
@@ -11,6 +11,7 @@ export default function Nevada() {
   const [nevada, setNevada] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
   const [_loadError, setLoadError] = React.useState(false);
+ 
 
   const fetchGeoJson = () => {
     var request = new XMLHttpRequest();
@@ -42,18 +43,18 @@ export default function Nevada() {
 
 
     let nevadaD3Container = useRef(null);
-
     useEffect(
         () => {
-       
-            if (!!nevada && !!nevadaD3Container.current) {
-          
+        
+            if ( !loading && !!nevada && !!nevadaD3Container.current) {
+               console.log('!!!', props.data)
                 let nevadaJson = JSON.parse(nevada.geojson);
-                const svg = d3.select(nevadaD3Container.current);
+                let svg = d3.select(nevadaD3Container.current);
                 let width = 600;
                 let height = 600;
 
-                let alerts = ["320113", "3202304","320219","320276","320136","320138","320271","320317423"];
+                let alerts = _.filter(props.data.alerts, v => v.length).map(alertType=> alertType.map(alert => alert.GEOID10)); 
+                console.log(alerts);
                 let selectedComponent = false;
                 let selected = '';
 
@@ -74,7 +75,7 @@ export default function Nevada() {
                     .on("click", reset);
 
                 function clicked(d, t, e) {
-                    setSelectedPrecinct('test');
+                     setSelectedPrecinct('test');
                     var path = d3.geoPath()
                         .projection(projection);
                     var centroid = path.centroid(d);
@@ -89,11 +90,11 @@ export default function Nevada() {
 
                 
                     selectedComponent && selectedComponent
-                    .attr("fill", d => {console.log(alerts); return alerts.includes(d.properties.GEOID10) ? "red" : "white"})
+                    .attr("fill", d => {console.log(alerts); return alerts.includes(d.properties.GEOID10) ? "#ef3a42" : "white"})
                         
                     selected = d.properties.GEOID10;
 
-                    selectedComponent = d3.select(this).attr('fill','blue');
+                    selectedComponent = d3.select(this).attr('fill','url(#diagonal-stripe-2)');
                     
                     nevadaPath
                         .transition()
@@ -102,24 +103,16 @@ export default function Nevada() {
                         .style("stroke-width", 1.5 / k + "px");
                 }
 
-                function handleMouseOver(d, t, e) {
-                    var path = d3.geoPath()
-                        .projection(projection);
-                    var centroid = path.centroid(d);
-                    let x = centroid[0];
-                    let y = centroid[1];
-                    let k = 4;
-                    console.log(d.properties.GEOID10);
-
-                    d3.select(this).attr('fill', "url(#diagonal-stripe-2)");
+                function handleMouseOver() {
+                    d3.select(this).attr('fill', "lightgray");
                 }
 
-                function handleMouseOut(d, t, e) {
+                function handleMouseOut() {
                     d3.select(this)
-                    .attr("fill", d => {console.log(alerts); return d.properties.GEOID10 === selected ? "blue" : alerts.includes(d.properties.GEOID10) ? "red" : "white"})
+                    .attr("fill", d => {return d.properties.GEOID10 === selected ? "url(#diagonal-stripe-2)" : alerts.includes(d.properties.GEOID10) ? "#ef3a42" : "white"})
                 }
 
-                let nevadaPath = svg
+                 let nevadaPath = svg
                     .append("g")
                     .selectAll("path")
                     .data(nevadaJson.features)
@@ -130,13 +123,17 @@ export default function Nevada() {
 
                 nevadaPath.attr('stroke', "black")
                     .attr('stroke-width', '.5px')
-                    .attr("fill", d => {console.log(alerts); return d.properties.GEOID10 === selected ? "blue" : alerts.includes(d.properties.GEOID10) ? "red" : "white"})
+                    .attr("fill", d => {return d.properties.GEOID10 === selected ? "url(#diagonal-stripe-2)" : alerts.includes(d.properties.GEOID10) ? "#ef3a42" : "white"})
                     .on('mouseover', handleMouseOver) 
                     .on("mouseout", handleMouseOut)
                     .on("click", clicked)
+                    return function(){
+                       nevadaD3Container.current = null;
+                    }
             }
+            
         },
-        [loading, nevada, nevadaD3Container.current])
+        [loading, props.data, nevada, nevadaD3Container.current])
 
     return (
     <React.Fragment>
@@ -144,7 +141,7 @@ export default function Nevada() {
         ZOOM OUT
       </button>
       <div>
-        {loading ? (
+        {loading  ? (
           <Box>Loading...</Box>
         ) : nevada ? (
           <svg
@@ -154,19 +151,18 @@ export default function Nevada() {
             ref={nevadaD3Container}
           >
             <defs>
-              {" "}
               <pattern
                 id="diagonal-stripe-2"
                 patternUnits="userSpaceOnUse"
-                width="10"
-                height="10"
+                width="2"
+                height="2"
               >
                 <image
                   xlinkHref="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxMCcgaGVpZ2h0PScxMCc+CiAgPHJlY3Qgd2lkdGg9JzEwJyBoZWlnaHQ9JzEwJyBmaWxsPSd3aGl0ZScvPgogIDxwYXRoIGQ9J00tMSwxIGwyLC0yCiAgICAgICAgICAgTTAsMTAgbDEwLC0xMAogICAgICAgICAgIE05LDExIGwyLC0yJyBzdHJva2U9J2JsYWNrJyBzdHJva2Utd2lkdGg9JzInLz4KPC9zdmc+"
                   x="0"
                   y="0"
-                  width="10"
-                  height="10"
+                  width="2"
+                  height="2"
                 />
               </pattern>
             </defs>

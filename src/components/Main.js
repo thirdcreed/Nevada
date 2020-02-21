@@ -1,4 +1,5 @@
 /** @jsx jsx */
+import React from "react";
 import { jsx, Flex, Box } from "theme-ui";
 import Nevada from "./Nevada";
 import { Alerts } from "./Alerts";
@@ -19,21 +20,20 @@ export const Main = ({ data }) => {
       }}
     >
       {/* Left panel */}
-      <Box sx={{ minWidth: "400px", p: [2, 3] }}>
+      <Box sx={{ minWidth: "324px", p: [2, 3] }}>
         <Alerts data={data} />
       </Box>
       {/* Center panel */}
       <Box
         sx={{
-          minWidth: "400px",
           borderLeft: "1px solid",
           borderColor: "gray.1",
           mt: [2, 0],
           p: [2, 3]
         }}
       >
-        <Nevada data={[1, 2, 3]}></Nevada>
-        <PrecinctTable />
+        <Nevada data={data}></Nevada> 
+        
       </Box>
       {/* Right panel */}
       <Flex
@@ -47,9 +47,9 @@ export const Main = ({ data }) => {
           p: [2, 3],
           justifyContent: "space-between"
         }}
-      >
-        <CorrelationMatrix></CorrelationMatrix>
-        <Sankey />
+      ><PrecinctTable />
+        {/* <CorrelationMatrix></CorrelationMatrix>
+        <Sankey /> */}
       </Flex>
     </Flex>
   );
