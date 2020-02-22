@@ -6,6 +6,7 @@ const colors = {
   secondary: "#1E2B39",
   error: "#ef3a42",
   warning: "#F2EE52",
+  alert: "#FFB6AD",
   muted: "#f1f3f4",
   gray: {
     "1": "hsl(0,0%,32%)",
@@ -93,16 +94,15 @@ export const theme = {
       fontWeight: "heading",
       fontSize: 96,
       m: 0,
-      p: 0,
-
+      p: 0
     },
     h2: {
       color: "text",
       fontFamily: "heading",
       lineHeight: "1.2",
       fontWeight: "heading",
-      m:2,
-      p:2,
+      m: 2,
+      p: 2,
       fontSize: 5
     },
     h3: {
@@ -175,7 +175,7 @@ export const theme = {
     outline: {
       ...primaryButtonStyle,
       color: primaryButtonStyle.borderColor,
-      bg: "background",
+      bg: "background"
     }
   },
   /* This section needs to be updated for theme-ui's newer interface */
@@ -195,7 +195,7 @@ export const theme = {
       lineHeight: "heading",
       fontWeight: "heading",
       fontFamily: "heading",
-      fontSize: 5,
+      fontSize: 5
     },
     Text: {
       lineHeight: "body",

@@ -1,6 +1,15 @@
 import parseCsv from "csv-parse/lib/sync";
 import _ from 'lodash';
 
+export const flattenPrecincts = data => {
+  const { electionData } = data
+  const counties = Object.keys(electionData);
+  const precincts = counties.flatMap(c =>
+    Object.keys(electionData[c]).map(p => electionData[c][p])
+  );
+  return precincts
+}
+
 export const massageResult = csv => {
   const jsResults = parseCsv(csv, {
     columns: true,

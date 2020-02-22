@@ -1,23 +1,31 @@
 /** @jsx jsx */
 import React from "react";
 import { jsx } from "theme-ui";
-import { precinctData, candidateDisplayName } from "../lib/precinctData";
+import { candidateDisplayName, flattenPrecincts } from "../lib/precinctData";
 import { Styled, Box, Button } from "theme-ui";
 import { UserContext } from "./Context";
 
-const mockData = precinctData();
-
 const boolToString = b => (b ? "Yes" : "No");
 
-export const PrecinctTable = ({ data = mockData }) => {
-  const { selectedPrecinct, setSelectedPrecinct } = React.useContext(
-    UserContext
-  );
+export const PrecinctTable = () => {
+  const { selectedPrecinct, data } = React.useContext(UserContext);
 
-  console.log('why does this work', selectedPrecinct)
-  
-  const { name, result } = data;
-  const [showVotes, setShowVotes] = React.useState(false);
+  const precincts = flattenPrecincts(data);
+
+  // const tableData = precincts.find(p => p.GEOID10 === selectedPrecinct);
+  const tableData = precincts[0];
+  console.log(tableData);
+  // debugger;
+  if (!tableData) {
+    return null;
+  }
+
+  return null;
+
+  console.log("why does this work", selectedPrecinct);
+
+  const { name, result } = tableData;
+  const [showVotes, setShowVotes] = React.useState(true);
   const [showRules, setShowRules] = React.useState(false);
   const [showIssues, setShowIssues] = React.useState(false);
 
@@ -65,11 +73,13 @@ const SectionHeader = ({ title, subtitle = "", toggleShow, show }) => {
         <Styled.th colSpan="1">
           <Styled.h3>{title}</Styled.h3>
         </Styled.th>
-        <Styled.th sx={{textAlign: "right"}} colSpan="3">
+        <Styled.th sx={{ textAlign: "right" }} colSpan="3">
           <Styled.h4>{subtitle}</Styled.h4>
         </Styled.th>
-        <Styled.th colSpan="3" sx={{textAlign: "right"}}>
-          <Button variant={show ? "outline" : "primary"} onClick={toggleShow}>{show ? "Hide" : "Show"}</Button>
+        <Styled.th colSpan="3" sx={{ textAlign: "right" }}>
+          <Button variant={show ? "outline" : "primary"} onClick={toggleShow}>
+            {show ? "Hide" : "Show"}
+          </Button>
         </Styled.th>
       </Styled.tr>
     </thead>
@@ -194,8 +204,10 @@ const RulesSection = ({ result, show, toggleShow }) => {
 };
 
 const IssuesSection = ({ result, show, toggleShow }) => {
-  const issueCount = result.issues.length
-  const subtitle = `${issueCount} issue${issueCount === 1 ? "" : "s"} identified`
+  const issueCount = result.issues.length;
+  const subtitle = `${issueCount} issue${
+    issueCount === 1 ? "" : "s"
+  } identified`;
   return (
     <>
       <SectionHeader

@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import React from "react";
-import { jsx, Flex, Box } from "theme-ui";
+import { jsx, Flex, Box, Styled } from "theme-ui";
 import Nevada from "./Nevada";
 import { Alerts } from "./Alerts";
 import Sankey from "./CorrelationSankey";
@@ -8,9 +8,28 @@ import CorrelationMatrix from "./CorrelationMatrix";
 import { PrecinctTable } from "./PrecinctTable";
 import { UserContext } from "./Context";
 
-export const Main = ({data}) => {
-  console.log("DATA:", data);
+const Loading = () => {
   return (
+    <Box
+      sx={{
+        width: "500px",
+        bg: "gray.1",
+        py: "3",
+        mx: "auto",
+        my: "auto",
+        textAlign: "center"
+      }}
+    >
+      <Styled.code sx={{ color: "white", fontSize: 2 }}>
+        Loading ...
+      </Styled.code>
+    </Box>
+  );
+};
+
+export const Main = () => {
+  const { data } = React.useContext(UserContext);
+  return data ? (
     <Flex
       sx={{
         flexDirection: ["column", "row"],
@@ -21,17 +40,20 @@ export const Main = ({data}) => {
       }}
     >
       {/* Left panel */}
-      <Box sx={{ minWidth: "324px", p: [2, 3] }}>
+      <Box sx={{ width: "350px", p: [2, 3], flex: "0 0 auto" }}>
         <Alerts data={data} />
       </Box>
       {/* Center panel */}
       <Box
         sx={{
           borderLeft: "2px solid",
-          borderColor: "black",
+          borderColor: "gray.1",
+          width: "600px",
+          flex: "1 0 auto",
+          py: [2, 3]
         }}
       >
-         <Nevada data={data}></Nevada> 
+        <Nevada data={data}></Nevada>
       </Box>
       {/* Right panel */}
       <Flex
@@ -40,15 +62,18 @@ export const Main = ({data}) => {
           borderColor: "black",
           flexDirection: "column",
           mt: [2, 0],
-          flex: "1",
+          flex: "1 0 auto",
           minWidth: "300px",
           p: [2, 3],
           justifyContent: "space-between"
         }}
-      ><PrecinctTable/>
+      >
+        <PrecinctTable />
         {/* <CorrelationMatrix></CorrelationMatrix>
         <Sankey /> */}
       </Flex>
     </Flex>
+  ) : (
+    <Loading />
   );
 };
