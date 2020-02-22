@@ -5,27 +5,10 @@ export const precinctId = candidatePrecinct => {
   return candidatePrecinct.GEOID10;
 };
 
+export const candidateDisplayName = key => candidateNames[key] || key;
+
 export const precinctDisplayName = candidatePrecinct =>
   `${precinctId(candidatePrecinct)}`;
-
-export const flattenPrecincts = data => {
-  const { electionData } = data;
-  const countyKeys = Object.keys(electionData);
-  const precincts = countyKeys.flatMap(c =>
-    Object.keys(electionData[c]).map(p => electionData[c][p])
-  );
-  return precincts.reduce((acc, p) => {
-    const firstResult = p[Object.keys(p)[0]];
-    const id = precinctId(firstResult);
-    if (acc[id]) {
-      console.error(id + " already exists");
-    }
-    acc[id] = p;
-    return acc;
-  }, {});
-};
-
-const falsey = str => !str || str === "FALSE" || str === "NA";
 
 export const massageResult = csv => {
   const jsResults = parseCsv(csv, {
@@ -164,7 +147,7 @@ const messageMap = {
     "All viable candidates had 1 delegate and could not have it taken away, so more delegates than originally intended were given for this precinct"
 };
 
-export const alertTypes = {
+const alertTypes = {
   // 12 viable_loss          logical: if a candidate was viable in 1st round and lost votes going to final round
   viable_loss: "error",
   // 13 nonviable_no_realign logical: if a nonviable candidate from 1st round did not realign in final round
@@ -182,13 +165,6 @@ export const alertTypes = {
   // 19 extra_del_given      logical: too many delegates given out but all candidates had 1 delegate, so an extra delegate was given. warning, not error
   extra_del_given: "error"
 };
-
-export const readableMessage = (key, precinct) => {
-  const message = messageMap[key];
-  return message && typeof message === "function" ? message(precinct) : message;
-};
-
-export const candidateDisplayName = key => candidateNames[key] || key;
 
 const precinctKeys = [
   "viability_threshold",
@@ -238,7 +214,31 @@ const candidateKeys = [
   "tie_loser"
 ];
 
-export const refinePrecinct = candidatesByPrecinct => {
+const humanMessage = (key, precinct) => {
+  const message = messageMap[key];
+  return message && typeof message === "function" ? message(precinct) : message;
+};
+
+const flattenPrecincts = data => {
+  const { electionData } = data;
+  const countyKeys = Object.keys(electionData);
+  const precincts = countyKeys.flatMap(c =>
+    Object.keys(electionData[c]).map(p => electionData[c][p])
+  );
+  return precincts.reduce((acc, p) => {
+    const firstResult = p[Object.keys(p)[0]];
+    const id = precinctId(firstResult);
+    if (acc[id]) {
+      console.error(id + " already exists");
+    }
+    acc[id] = p;
+    return acc;
+  }, {});
+};
+
+const falsey = str => !str || str === "FALSE" || str === "NA";
+
+const refinePrecinct = candidatesByPrecinct => {
   const candidateLevel = Object.keys(candidatesByPrecinct).reduce(
     (acc, key) => {
       const thisResult = candidatesByPrecinct[key];
@@ -282,7 +282,7 @@ export const refinePrecinct = candidatesByPrecinct => {
     .map(k => {
       const type = alertTypes[k];
       if (type) {
-        return { type, message: readableMessage(k, precinctLevel) };
+        return { type, message: humanMessage(k, precinctLevel) };
       }
     });
 
@@ -309,7 +309,7 @@ const issuesForObject = objectWithIssueKeys => {
       if (type) {
         return [
           ...acc,
-          { type, message: readableMessage(k, objectWithIssueKeys) || k }
+          { type, message: humanMessage(k, objectWithIssueKeys) || k }
         ];
       } else {
         return acc;
