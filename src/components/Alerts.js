@@ -5,12 +5,9 @@ import _ from "lodash";
 import { UserContext } from "./Context";
 import NounCard from "./noun_card.js";
 import {
-  readableMessage,
-  alertTypes,
   refinePrecinct,
   precinctDisplayName,
-  flattenPrecincts,
-  falsey
+  flattenPrecincts
 } from "../lib/precinctData";
 
 // // create an issue with key common data and precinct nested inside

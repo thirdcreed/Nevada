@@ -22,6 +22,12 @@ export const PrecinctTable = () => {
     UserContext
   );
 
+  const reset = () => {
+    setSelectedPrecinct(null);
+    setShowIssues(true);
+    setShowVotes(false);
+  };
+
   React.useEffect(() => {
     if (selectedPrecinct) {
       const precincts = flattenPrecincts(data);
@@ -51,7 +57,7 @@ export const PrecinctTable = () => {
 
   return tableData ? (
     <Box sx={{ width: "100%" }}>
-      <Button variant="blue" onClick={() => setSelectedPrecinct(null)}>
+      <Button variant="blue" onClick={reset}>
         Reset
       </Button>
       <Styled.h3 sx={{ display: "inline-block" }}>
@@ -109,12 +115,21 @@ const SectionHeader = ({ title, subtitle = "", toggleShow, show }) => {
 };
 
 const VotesSection = ({ data, show, toggleShow }) => {
-  const { candidates } = data;
+  console.log(data);
+  const { candidates, precinct } = data;
+  const { viability_threshold: viabilityThreshold } = precinct;
   const allCandidateKeys = Object.keys(candidates);
 
   return (
     <>
-      <SectionHeader title="Votes" show={show} toggleShow={toggleShow} />
+      <SectionHeader
+        title="Votes"
+        show={show}
+        toggleShow={toggleShow}
+        subtitle={
+          viabilityThreshold ? `Viability threshold: ${viabilityThreshold}` : ""
+        }
+      />
       {show && (
         <>
           <thead>
@@ -129,10 +144,10 @@ const VotesSection = ({ data, show, toggleShow }) => {
                 <Styled.h5>Round 2</Styled.h5>
               </Styled.th>
               <Styled.th>
-                <Styled.h5>Expected SDEs</Styled.h5>
+                <Styled.h5>Expected CDs</Styled.h5>
               </Styled.th>
               <Styled.th>
-                <Styled.h5>Actual SDEs</Styled.h5>
+                <Styled.h5>Actual CDs</Styled.h5>
               </Styled.th>
             </Styled.tr>
           </thead>
@@ -173,7 +188,7 @@ const IssuesSection = ({ data, show, toggleShow }) => {
     <>
       <SectionHeader
         title="Possible Issues"
-        subtitle={"subtitle"}
+        subtitle={`${issues.length} issue${issues.length === 1 ? "" : "s"}`}
         show={show}
         toggleShow={toggleShow}
       ></SectionHeader>
