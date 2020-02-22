@@ -8,7 +8,7 @@ import CorrelationMatrix from "./CorrelationMatrix";
 import { PrecinctTable } from "./PrecinctTable";
 import { UserContext } from "./Context";
 
-const showMap = process.env.REACT_APP_SHOW_MAP === "true";
+const showMap = true; //process.env.REACT_APP_SHOW_MAP === "true";
 
 const Loading = () => {
   return (
@@ -49,7 +49,7 @@ export const Main = () => {
           sx={{
             borderLeft: "2px solid",
             borderColor: "gray.1",
-            width: "600px",
+
             flex: "1 0 auto",
             py: [2, 3]
           }}
@@ -76,6 +76,6 @@ export const Main = () => {
       </Flex>
     </Flex>
   ) : (
-    <Loading />
-  );
+      <Loading />
+    );
 };

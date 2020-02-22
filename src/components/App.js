@@ -40,7 +40,7 @@ const App = () => {
       var request = new XMLHttpRequest();
       request.open("GET", "https://nevada-cranks.herokuapp.com/results", true);
 
-      request.onload = function() {
+      request.onload = function () {
         if (this.status >= 200 && this.status < 400) {
           console.log("got data");
           var data = massageResult(this.response);
@@ -52,7 +52,7 @@ const App = () => {
           console.warn("server error");
         }
       };
-      request.onerror = function() {
+      request.onerror = function () {
         console.warn("didn't get it");
       };
       request.send();
