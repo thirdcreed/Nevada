@@ -16,8 +16,6 @@ export default function Nevada(props) {
   const [zoom, setZoom] = React.useState("translate(1,1)");
   const [currentZoom, setCurrentZoom] = React.useState(null);
 
-
-
   const fetchGeoJson = () => {
     var request = new XMLHttpRequest();
     request.open("GET", "https://nevada-cranks.herokuapp.com/nevada", true);
@@ -73,7 +71,7 @@ export default function Nevada(props) {
 
   function toPaths(feature) {
 
-    let alerts = _.filter(props.data.alerts, v => v.length).map(alertType => alertType.map(alert => alert.GEOID10));
+    let alerts = props.data.alerts && _.flatten(_.map(props.data.alerts, v => v)).map(alert => alert.GEOID10);
 
     function clicked() {
       setSelectedPrecinct(feature.properties.GEOID10)
@@ -92,9 +90,6 @@ export default function Nevada(props) {
       );
       var scale = d3.scaleLinear([0, largestDimension], [0.0, 4.0]);
       let k = scale(50);
-      console.log({ selectedPrecinct });
-      console.log({ props })
-
 
       if (currentZoom !== feature.properties.GEOID10) {
         setStrokeWidth(1.5 / k + "px");
@@ -111,7 +106,7 @@ export default function Nevada(props) {
     }
 
     return (<path d={pathGenerator(feature)}
-      key={feature.GEOID10}
+      key={feature.properties.GEOID10}
       stroke="black"
       strokeWidth={strokeWidth}
       fill={fill}
