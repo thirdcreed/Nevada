@@ -34,7 +34,7 @@ export const Layout = ({ children }) => {
           </a>
 
           <Styled.h3 sx={{ color: "gray.2" }}>
-            Analyzing the Nevada Caucus as fast as we can
+            Inspecting the nevada caucus results.
           </Styled.h3>
         </header>
         <main

@@ -3,7 +3,11 @@ import React from "react";
 import { jsx, Flex, Styled } from "theme-ui";
 import { UserContext } from "./Context";
 import NounCard from "./noun_card.js";
-import { readableMessage, precinctId } from "../lib/precinctData";
+import {
+  readableMessage,
+  precinctId,
+  precinctDisplayName
+} from "../lib/precinctData";
 
 // create an issue with key common data and precinct nested inside
 const groupedIssues = (issues, issueType) =>
@@ -50,7 +54,7 @@ export const Alert = ({ type, alert, onClick, selected }) => {
     <div className={`card ${selected ? "selected" : ""}`} onClick={onClick}>
       <div className="container">
         <div className="top error">
-          <div className="title">Precinct {precinct["precinct_full"]}</div>
+          <div className="title">Precinct {precinctDisplayName(precinct)}</div>
         </div>
         <div className="bottom">
           <div className="content-left">
@@ -73,8 +77,7 @@ export const Alerts = ({ data }) => {
   const allAlerts = groupedIssues(alerts, "error");
   const allWarnings = groupedIssues(warnings, "warning");
   const allIssues = allAlerts.concat(allWarnings).slice(0, 500);
-  console.log(allIssues);
-  // debugger;
+
   return (
     <Flex
       sx={{

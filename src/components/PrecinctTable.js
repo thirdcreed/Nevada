@@ -1,12 +1,15 @@
 /** @jsx jsx */
 import React from "react";
 import { jsx } from "theme-ui";
+import compact from "lodash/compact";
 import {
-  precinctId,
+  falsey,
   candidateDisplayName,
+  precinctDisplayName,
   flattenPrecincts,
   _rowFixture,
-  refinePrecinct
+  refinePrecinct,
+  readableMessage
 } from "../lib/precinctData";
 import { Styled, Box, Button } from "theme-ui";
 import { UserContext } from "./Context";
@@ -14,9 +17,9 @@ import { UserContext } from "./Context";
 const boolToString = b => (b ? "Yes" : "No");
 
 export const PrecinctTable = () => {
-  const [showVotes, setShowVotes] = React.useState(true);
+  const [showVotes, setShowVotes] = React.useState(false);
   const [showRules, setShowRules] = React.useState(false);
-  const [showIssues, setShowIssues] = React.useState(false);
+  const [showIssues, setShowIssues] = React.useState(true);
   const [tableData, setTableData] = React.useState(null);
   const { selectedPrecinct, data } = React.useContext(UserContext);
 
@@ -44,18 +47,20 @@ export const PrecinctTable = () => {
 
   return tableData ? (
     <Box sx={{ width: "100%" }}>
-      <Styled.h3>{selectedPrecinct}</Styled.h3>
+      <Styled.h3>Precinct {precinctDisplayName(tableData.meta)}</Styled.h3>
       <Styled.table sx={{ width: "100%" }}>
         <VotesSection
           show={showVotes}
           toggleShow={toggleShowVotes}
           data={tableData}
         />
-        <RulesSection
-          show={showRules}
-          toggleShow={toggleShowRules}
-          data={tableData}
-        />
+        {null && (
+          <RulesSection
+            show={showRules}
+            toggleShow={toggleShowRules}
+            data={tableData}
+          />
+        )}
         <IssuesSection
           show={showIssues}
           toggleShow={toggleShowIssues}
@@ -148,6 +153,48 @@ const VotesSection = ({ data, show, toggleShow }) => {
   );
 };
 
+const IssuesSection = ({ data, show, toggleShow }) => {
+  const { precinct, candidates } = data;
+  const precinctMessages = Object.keys(precinct)
+    .filter(key => !falsey(precinct[key]))
+    .map(k => readableMessage(k, precinct));
+
+  const candidateMessages = Object.keys(candidates).flatMap(candidateKey => {
+    const candidatePrecinct = candidates[candidateKey];
+
+    return Object.keys(candidatePrecinct)
+      .filter(key => !falsey(candidatePrecinct[key]))
+      .map(key => {
+        return readableMessage(key, candidatePrecinct);
+      });
+  });
+
+  const messages = compact([...precinctMessages, ...candidateMessages]);
+  return (
+    null || (
+      <>
+        <SectionHeader
+          title="Possible Issues"
+          subtitle={"subtitle"}
+          show={show}
+          toggleShow={toggleShow}
+        ></SectionHeader>
+        {show && (
+          <tbody>
+            <tr>
+              <Styled.td colSpan="5">
+                {messages.map(iss => (
+                  <Styled.p key={iss}>- {iss}</Styled.p>
+                ))}
+              </Styled.td>
+            </tr>
+          </tbody>
+        )}
+      </>
+    )
+  );
+};
+
 const RulesSection = ({ result, show, toggleShow }) => {
   return (
     null || (
@@ -203,37 +250,6 @@ const RulesSection = ({ result, show, toggleShow }) => {
               </Styled.tr>
             </tbody>
           </>
-        )}
-      </>
-    )
-  );
-};
-
-const IssuesSection = ({ data, show, toggleShow }) => {
-  // const issueCount = result.issues.length;
-  // const subtitle = `${issueCount} issue${
-  //   issueCount === 1 ? "" : "s"
-  // } identified`;
-  console.log(data);
-  return (
-    null || (
-      <>
-        <SectionHeader
-          title="Possible Issues"
-          subtitle={"subtitle"}
-          show={show}
-          toggleShow={toggleShow}
-        ></SectionHeader>
-        {show && (
-          <tbody>
-            <tr>
-              <Styled.td colSpan="5">
-                {data.issues.map(iss => (
-                  <Styled.p key={iss}>- {iss}</Styled.p>
-                ))}
-              </Styled.td>
-            </tr>
-          </tbody>
         )}
       </>
     )

@@ -1,10 +1,13 @@
 import parseCsv from "csv-parse/lib/sync";
 import _ from "lodash";
 
-export const precinctId = candidateRow => {
-  const { county_fips, state_fips } = candidateRow;
+export const precinctId = candidatePrecinct => {
+  const { county_fips, state_fips } = candidatePrecinct;
   return `${state_fips}${county_fips}`;
 };
+
+export const precinctDisplayName = candidatePrecinct =>
+  `${precinctId(candidatePrecinct)} | ${candidatePrecinct.precinct_full}`;
 
 export const flattenPrecincts = data => {
   const { electionData } = data;
@@ -19,7 +22,7 @@ export const flattenPrecincts = data => {
   }, {});
 };
 
-const falsey = str => !str || str === "FALSE" || str === "NA";
+export const falsey = str => !str || str === "FALSE" || str === "NA";
 
 export const massageResult = csv => {
   const jsResults = parseCsv(csv, {
@@ -66,71 +69,82 @@ export const massageResult = csv => {
     return falsey(row[prop]);
   }
 
-  let viableLoss = _.filter(jsResults, row => !isFalse(row, "viable_loss")).map(
-    toAlerts
-  );
-  let moreFinalVotes = _.filter(
+  let viable_loss = _.filter(
+    jsResults,
+    row => !isFalse(row, "viable_loss")
+  ).map(toAlerts);
+  let more_final_votes = _.filter(
     jsResults,
     row => !isFalse(row, "more_final_votes")
   ).map(toAlerts);
-  let nonviableNoRealign = _.filter(
+  let nonviable_no_realign = _.filter(
     jsResults,
     row => !isFalse(row, "nonviable_no_realign")
   ).map(toAlerts);
 
-  let delCountsDiff = _.filter(
+  let del_counts_diff = _.filter(
     jsResults,
     row => !isFalse(row, "del_counts_diff")
   ).map(toWarnings);
-  let hasAlphaShift = _.filter(
+  let has_alpha_shift = _.filter(
     jsResults,
     row => !isFalse(row, "has_alpha_shift")
   ).map(toWarnings);
-  let fewerFinalVotes = _.filter(
+  let fewer_final_votes = _.filter(
     jsResults,
     row => !isFalse(row, "fewer_final_votes")
   ).map(toWarnings);
-  let extraDelGiven = _.filter(
+  let extra_del_given = _.filter(
     jsResults,
     row => !isFalse(row, "extra_del_given")
   ).map(toWarnings);
 
-  let alerts = { viableLoss, moreFinalVotes, nonviableNoRealign };
+  let alerts = { viable_loss, more_final_votes, nonviable_no_realign };
   let warnings = {
-    delCountsDiff,
-    hasAlphaShift,
-    fewerFinalVotes,
-    extraDelGiven
+    del_counts_diff,
+    has_alpha_shift,
+    fewer_final_votes,
+    extra_del_given
   };
   return { electionData, alerts, warnings };
 };
 
 const candidateNames = {
-  liz: "Warren",
-  pete: "BootEdgeEdge",
-  tulsi: "Gabbard",
-  joe: "Biden",
-  amy: "Klobuchar",
-  bernie: "Sanders",
-  mike: "Bloomberg"
+  delaneyj: "John Delaney",
+  bennetm: "Michael Bennet",
+  bidenj: "Joe Biden",
+  bloombergm: "Mike Bloombefg",
+  buttigiegp: "Pete Buttigiegp",
+  gabbardt: "Tulsi Gabbard",
+  klobuchara: "Amy Klobuchar",
+  other: "Other",
+  patrickd: "Deval Patrick",
+  sandersb: "Bernie Sanders",
+  steyert: "Tom Steyer",
+  uncommitted: "Uncommitted",
+  warrene: "Elizabeth Warren",
+  yanga: "Andrew Yang"
 };
 
 // for a given message type, a string or precinct => string function
 const messageMap = {
   countySucks: precinct => `${precinct.county} sucks`,
-  viableLoss: "1st-round viable candidate lost votes in round 2",
-  nonviableNoRealign:
-    "1st-round nonviable candidate did not realign in round 2",
-  alphaShift: precinct =>
+  viable_loss: "1st-round viable candidate lost votes in round 2",
+  nonviable_no_realign: ({ candidate }) =>
+    `${candidateDisplayName(
+      candidate
+    )} was nonviable in 1st-round but did not realign`,
+  alpha_shift: precinct =>
     `Alphabetical shift in voting detected for ${precinct["has_alpha_shift"]}`,
-  moreFinalVotes: `More votes in final alignment than 1st alignment`,
-  fewerFinalVotes: `Fewer votes in final alignment than 1st alignment`,
-  delCountsDiff: "Our delegate counts differ from those reported",
-  extraDelGiven:
+  more_final_votes: `More votes in final alignment than 1st alignment`,
+  fewer_final_votes: `Fewer votes in final alignment than 1st alignment`,
+  del_counts_diff: "Our delegate counts differ from those reported",
+  extra_del_given:
     "Too many delegates given out but all candidates had 1 delegate, so an extra delegate was given"
 };
 
 export const readableMessage = (key, precinct) => {
+  console.log({ key, n: precinct.nonviable_no_realign });
   const message = messageMap[key];
   return message && typeof message === "function" ? message(precinct) : message;
 };
