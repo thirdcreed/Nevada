@@ -13,16 +13,14 @@ const Loading = () => {
     <Box
       sx={{
         width: "500px",
-        bg: "gray.1",
-        py: "3",
+        bg: "background",
+        py: "4",
         mx: "auto",
         my: "auto",
         textAlign: "center"
       }}
     >
-      <Styled.code sx={{ color: "white", fontSize: 2 }}>
-        Loading ...
-      </Styled.code>
+      <Styled.code sx={{ color: "text", fontSize: 2 }}>Loading ...</Styled.code>
     </Box>
   );
 };

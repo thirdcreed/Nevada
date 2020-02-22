@@ -176,6 +176,10 @@ export const theme = {
       ...primaryButtonStyle,
       color: primaryButtonStyle.borderColor,
       bg: "background"
+    },
+    blue: {
+      ...primaryButtonStyle,
+      bg: "primary"
     }
   },
   /* This section needs to be updated for theme-ui's newer interface */

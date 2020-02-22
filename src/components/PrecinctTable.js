@@ -1,15 +1,12 @@
 /** @jsx jsx */
 import React from "react";
 import { jsx } from "theme-ui";
-import compact from "lodash/compact";
 import {
-  falsey,
   candidateDisplayName,
   precinctDisplayName,
   flattenPrecincts,
   _rowFixture,
-  refinePrecinct,
-  readableMessage
+  refinePrecinct
 } from "../lib/precinctData";
 import { Styled, Box, Button } from "theme-ui";
 import { UserContext } from "./Context";
@@ -21,15 +18,21 @@ export const PrecinctTable = () => {
   const [showRules, setShowRules] = React.useState(false);
   const [showIssues, setShowIssues] = React.useState(true);
   const [tableData, setTableData] = React.useState(null);
-  const { selectedPrecinct, data } = React.useContext(UserContext);
+  const { selectedPrecinct, setSelectedPrecinct, data } = React.useContext(
+    UserContext
+  );
 
   React.useEffect(() => {
-    const precincts = flattenPrecincts(data);
-    const candidatesByPrecinct =
-      selectedPrecinct && precincts[selectedPrecinct];
+    if (selectedPrecinct) {
+      const precincts = flattenPrecincts(data);
+      const candidatesByPrecinct =
+        selectedPrecinct && precincts[selectedPrecinct];
 
-    if (candidatesByPrecinct) {
-      setTableData(refinePrecinct(candidatesByPrecinct));
+      if (candidatesByPrecinct) {
+        setTableData(refinePrecinct(candidatesByPrecinct));
+      }
+    } else {
+      setTableData(null);
     }
   }, [selectedPrecinct]);
 
@@ -48,7 +51,12 @@ export const PrecinctTable = () => {
 
   return tableData ? (
     <Box sx={{ width: "100%" }}>
-      <Styled.h3>Precinct {precinctDisplayName(tableData.meta)}</Styled.h3>
+      <Button variant="blue" onClick={() => setSelectedPrecinct(null)}>
+        Reset
+      </Button>
+      <Styled.h3 sx={{ display: "inline-block" }}>
+        Precinct {precinctDisplayName(tableData.meta)}
+      </Styled.h3>
       <Styled.table sx={{ width: "100%" }}>
         <VotesSection
           show={showVotes}
@@ -70,11 +78,15 @@ export const PrecinctTable = () => {
       </Styled.table>
     </Box>
   ) : (
-    <Box sx={{ width: "100%" }}>
-      <Styled.h3>Select a precinct</Styled.h3>
-    </Box>
+    <SelectAPrecinct />
   );
 };
+
+const SelectAPrecinct = () => (
+  <Box sx={{ width: "100%" }}>
+    <Styled.h3>Select a precinct</Styled.h3>
+  </Box>
+);
 
 const SectionHeader = ({ title, subtitle = "", toggleShow, show }) => {
   return (
@@ -155,44 +167,30 @@ const VotesSection = ({ data, show, toggleShow }) => {
 };
 
 const IssuesSection = ({ data, show, toggleShow }) => {
-  const { precinct, candidates } = data;
-  const precinctMessages = Object.keys(precinct)
-    .filter(key => !falsey(precinct[key]))
-    .map(k => readableMessage(k, precinct));
+  const { issues } = data;
 
-  const candidateMessages = Object.keys(candidates).flatMap(candidateKey => {
-    const candidatePrecinct = candidates[candidateKey];
-
-    return Object.keys(candidatePrecinct)
-      .filter(key => !falsey(candidatePrecinct[key]))
-      .map(key => {
-        return readableMessage(key, candidatePrecinct);
-      });
-  });
-
-  const messages = compact([...precinctMessages, ...candidateMessages]);
   return (
-    null || (
-      <>
-        <SectionHeader
-          title="Possible Issues"
-          subtitle={"subtitle"}
-          show={show}
-          toggleShow={toggleShow}
-        ></SectionHeader>
-        {show && (
-          <tbody>
-            <tr>
-              <Styled.td colSpan="5">
-                {messages.map(iss => (
-                  <Styled.p key={iss}>- {iss}</Styled.p>
-                ))}
-              </Styled.td>
-            </tr>
-          </tbody>
-        )}
-      </>
-    )
+    <>
+      <SectionHeader
+        title="Possible Issues"
+        subtitle={"subtitle"}
+        show={show}
+        toggleShow={toggleShow}
+      ></SectionHeader>
+      {show && (
+        <tbody>
+          <tr>
+            <Styled.td colSpan="5">
+              {issues.map((iss, i) => (
+                <Styled.p key={i}>
+                  - {iss.message} ({iss.type})
+                </Styled.p>
+              ))}
+            </Styled.td>
+          </tr>
+        </tbody>
+      )}
+    </>
   );
 };
 

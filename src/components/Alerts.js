@@ -7,7 +7,7 @@ import NounCard from "./noun_card.js";
 import {
   readableMessage,
   alertTypes,
-  precinctId,
+  refinePrecinct,
   precinctDisplayName,
   flattenPrecincts,
   falsey
@@ -57,7 +57,7 @@ export const Issue = ({ precinct, issue, onClick, selected }) => {
     // </Box>
     <div className={`card ${selected ? "selected" : ""}`} onClick={onClick}>
       <div className="container">
-        <div className="top error">
+        <div className="top error" sx={{ backgroundColor: "primary" }}>
           <div className="title">Precinct {precinctDisplayName(precinct)}</div>
         </div>
         <div className="bottom">
@@ -79,36 +79,16 @@ export const Alerts = () => {
 
   const precincts = flattenPrecincts(data);
 
-  const precinctIssues = Object.keys(precincts).reduce((acc, pkey) => {
+  const refinedPrecincts = Object.keys(precincts).reduce((acc, pkey) => {
     const candidatesByPrecinct = precincts[pkey];
-    const issues = Object.keys(candidatesByPrecinct).flatMap(canKey => {
-      const candidatePrecinct = candidatesByPrecinct[canKey];
-
-      return _.compact(
-        Object.keys(candidatePrecinct)
-          .filter(k => !falsey(k))
-          .map(k => {
-            const type = alertTypes[k];
-            if (type) {
-              return {
-                type,
-                message: readableMessage(k, candidatePrecinct)
-              };
-            }
-          })
-      );
-    });
-
-    // grab a single candidateprecinct to get some crap outta
-    const singlePrecinct = _.values(candidatesByPrecinct)[0];
-    acc[pkey] = { precinct: singlePrecinct, issues };
+    const refined = refinePrecinct(candidatesByPrecinct);
+    acc[pkey] = refined;
     return acc;
   }, {});
-  const allIssues = Object.keys(precinctIssues).flatMap(
-    p => precinctIssues[p].issues
-  );
 
-  console.log(precinctIssues);
+  const allIssues = Object.keys(refinedPrecincts).flatMap(
+    p => refinedPrecincts[p].issues
+  );
 
   return (
     <Flex
@@ -118,27 +98,28 @@ export const Alerts = () => {
         maxWidth: "500px"
       }}
     >
-      <Styled.h2>Notable Votables</Styled.h2>
+      <Styled.h2>Precincts of Note</Styled.h2>
       {allIssues.length === 0 ? (
         <Styled.p>Having a normal one</Styled.p>
       ) : (
-        Object.keys(precinctIssues).flatMap((precinctId, pi) => {
-          const { precinct, issues } = precinctIssues[precinctId];
-          console.log(precinct);
-          return issues.map((issue, ii) => (
-            <Issue
-              selected={precinctId === selectedPrecinct}
-              key={
-                /* Should maybe be the GEOID10 as unique id */
-                precinctId + issue.message + pi + ii
-              }
-              precinct={precinct}
-              issue={issue}
-              onClick={() => {
-                setSelectedPrecinct(precinctId);
-              }}
-            />
-          ));
+        Object.keys(refinedPrecincts).flatMap((precinctId, pi) => {
+          const { meta, issues } = refinedPrecincts[precinctId];
+          return issues.map((issue, ii) => {
+            return (
+              <Issue
+                selected={precinctId === selectedPrecinct}
+                key={
+                  /* Should maybe be the GEOID10 as unique id */
+                  precinctId + ii
+                }
+                precinct={meta}
+                issue={issue}
+                onClick={() => {
+                  setSelectedPrecinct(precinctId);
+                }}
+              />
+            );
+          });
         })
       )}
     </Flex>

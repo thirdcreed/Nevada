@@ -3,8 +3,6 @@ import _ from "lodash";
 
 export const precinctId = candidatePrecinct => {
   return candidatePrecinct.GEOID10;
-  // const { county_fips, state_fips } = candidatePrecinct;
-  // return candidatePrecinct.GEOID10 || `${state_fips}${county_fips}`;
 };
 
 export const precinctDisplayName = candidatePrecinct =>
@@ -34,7 +32,6 @@ export const massageResult = csv => {
     columns: true,
     skip_empty_lines: true
   }).slice(0, 100);
-  // console.log({ jsResults });
   let countyLevelGroup = _.groupBy(jsResults, "county");
   let electionData = _.reduce(
     countyLevelGroup,
@@ -168,7 +165,6 @@ export const alertTypes = {
 };
 
 export const readableMessage = (key, precinct) => {
-  console.log({ key, n: precinct.nonviable_no_realign });
   const message = messageMap[key];
   return message && typeof message === "function" ? message(precinct) : message;
 };
@@ -262,11 +258,44 @@ export const refinePrecinct = candidatesByPrecinct => {
     metaKeys
   );
 
+  const precinctIssues = issuesForObject(precinctLevel)
+    .filter(key => !falsey(precinctLevel[key]))
+    .map(k => {
+      const type = alertTypes[k];
+      if (type) {
+        return { type, message: readableMessage(k, precinctLevel) };
+      }
+    });
+
+  const candidateIssues = Object.keys(candidateLevel).flatMap(candidateKey => {
+    const candidatePrecinct = candidateLevel[candidateKey];
+    return issuesForObject(candidatePrecinct);
+  });
+
+  const issues = _.compact([...precinctIssues, ...candidateIssues]);
+
   return {
     meta,
     candidates: candidateLevel,
-    precinct: precinctLevel
+    precinct: precinctLevel,
+    issues
   };
+};
+
+const issuesForObject = objectWithIssueKeys => {
+  return Object.keys(objectWithIssueKeys)
+    .filter(key => !falsey(objectWithIssueKeys[key]))
+    .reduce((acc, k) => {
+      const type = alertTypes[k];
+      if (type) {
+        return [
+          ...acc,
+          { type, message: readableMessage(k, objectWithIssueKeys) || k }
+        ];
+      } else {
+        return acc;
+      }
+    }, []);
 };
 
 /*
