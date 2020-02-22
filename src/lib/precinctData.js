@@ -2,8 +2,9 @@ import parseCsv from "csv-parse/lib/sync";
 import _ from "lodash";
 
 export const precinctId = candidatePrecinct => {
-  const { county_fips, state_fips } = candidatePrecinct;
-  return `${state_fips}${county_fips}`;
+  return candidatePrecinct.GEOID10;
+  // const { county_fips, state_fips } = candidatePrecinct;
+  // return candidatePrecinct.GEOID10 || `${state_fips}${county_fips}`;
 };
 
 export const precinctDisplayName = candidatePrecinct =>
@@ -17,7 +18,11 @@ export const flattenPrecincts = data => {
   );
   return precincts.reduce((acc, p) => {
     const firstResult = p[Object.keys(p)[0]];
-    acc[precinctId(firstResult)] = p;
+    const id = precinctId(firstResult);
+    if (acc[id]) {
+      console.error(id + " already exists");
+    }
+    acc[id] = p;
     return acc;
   }, {});
 };
@@ -141,6 +146,25 @@ const messageMap = {
   del_counts_diff: "Our delegate counts differ from those reported",
   extra_del_given:
     "Too many delegates given out but all candidates had 1 delegate, so an extra delegate was given"
+};
+
+export const alertTypes = {
+  // 12 viable_loss          logical: if a candidate was viable in 1st round and lost votes going to final round
+  viable_loss: "error",
+  // 13 nonviable_no_realign logical: if a nonviable candidate from 1st round did not realign in final round
+  nonviable_no_realign: "error",
+  // 14 alpha_shift          string: name of candidate that had alphabetical shift
+  alpha_shift: "error",
+  // 15 has_alpha_shift      logical: alphabetical shift in vote reporting detected. warning, not error
+  has_alpha_shift: "warning",
+  // 16 more_final_votes     logical: more votes in final alignment than 1st alignment
+  more_final_votes: "error",
+  // 17 fewer_final_votes    logical: fewer votes in final alignment than 1st. warning, not error
+  fewer_final_votes: "warning",
+  // 18 del_counts_diff      logical: our delegate counts differ from those reported
+  del_counts_diff: "error",
+  // 19 extra_del_given
+  extra_del_given: "error"
 };
 
 export const readableMessage = (key, precinct) => {

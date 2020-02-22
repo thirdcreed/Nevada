@@ -33,7 +33,7 @@ export const Main = () => {
     <Flex
       sx={{
         flexDirection: ["column", "row"],
-        justifyContent: "space-between",
+        justifyContent: "flex-start",
         alignItems: "stretch",
         m: "0 auto",
         width: "100%"

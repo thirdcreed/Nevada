@@ -1,26 +1,30 @@
 /** @jsx jsx */
 import React from "react";
 import { jsx, Flex, Styled } from "theme-ui";
+import _ from "lodash";
 import { UserContext } from "./Context";
 import NounCard from "./noun_card.js";
 import {
   readableMessage,
+  alertTypes,
   precinctId,
-  precinctDisplayName
+  precinctDisplayName,
+  flattenPrecincts,
+  falsey
 } from "../lib/precinctData";
 
-// create an issue with key common data and precinct nested inside
-const groupedIssues = (issues, issueType) =>
-  Object.keys(issues).flatMap(key =>
-    issues[key].map(precinct => {
-      return {
-        precinct,
-        message: readableMessage(key, precinct),
-        type: issueType,
-        key
-      };
-    })
-  );
+// // create an issue with key common data and precinct nested inside
+// const groupedIssues = (issues, issueType) =>
+//   Object.keys(issues).flatMap(key =>
+//     issues[key].map(precinct => {
+//       return {
+//         precinct,
+//         message: readableMessage(key, precinct),
+//         type: issueType,
+//         key
+//       };
+//     })
+//   );
 
 const alertColorTheme = {
   warning: { background: "warning", color: "black" },
@@ -29,8 +33,8 @@ const alertColorTheme = {
 };
 const defaultColors = alertColorTheme.comment;
 
-export const Alert = ({ type, alert, onClick, selected }) => {
-  const { precinct } = alert;
+export const Issue = ({ precinct, issue, onClick, selected }) => {
+  const { type, message } = issue;
   const { background, color } = alertColorTheme[type] || defaultColors;
   return (
     // <Box
@@ -59,7 +63,7 @@ export const Alert = ({ type, alert, onClick, selected }) => {
         <div className="bottom">
           <div className="content-left">
             <div className="error-type">Actually wrong</div>
-            <div className="description">{alert.message}</div>
+            <div className="description">{message}</div>
           </div>
           <NounCard style={{ height: "65px", width: "65px;" }}></NounCard>
         </div>
@@ -68,15 +72,43 @@ export const Alert = ({ type, alert, onClick, selected }) => {
   );
 };
 
-export const Alerts = ({ data }) => {
-  const { selectedPrecinct, setSelectedPrecinct } = React.useContext(
+export const Alerts = () => {
+  const { selectedPrecinct, setSelectedPrecinct, data } = React.useContext(
     UserContext
   );
-  const { alerts, warnings } = data;
 
-  const allAlerts = groupedIssues(alerts, "error");
-  const allWarnings = groupedIssues(warnings, "warning");
-  const allIssues = allAlerts.concat(allWarnings).slice(0, 500);
+  const precincts = flattenPrecincts(data);
+
+  const precinctIssues = Object.keys(precincts).reduce((acc, pkey) => {
+    const candidatesByPrecinct = precincts[pkey];
+    const issues = Object.keys(candidatesByPrecinct).flatMap(canKey => {
+      const candidatePrecinct = candidatesByPrecinct[canKey];
+
+      return _.compact(
+        Object.keys(candidatePrecinct)
+          .filter(k => !falsey(k))
+          .map(k => {
+            const type = alertTypes[k];
+            if (type) {
+              return {
+                type,
+                message: readableMessage(k, candidatePrecinct)
+              };
+            }
+          })
+      );
+    });
+
+    // grab a single candidateprecinct to get some crap outta
+    const singlePrecinct = _.values(candidatesByPrecinct)[0];
+    acc[pkey] = { precinct: singlePrecinct, issues };
+    return acc;
+  }, {});
+  const allIssues = Object.keys(precinctIssues).flatMap(
+    p => precinctIssues[p].issues
+  );
+
+  console.log(precinctIssues);
 
   return (
     <Flex
@@ -90,25 +122,23 @@ export const Alerts = ({ data }) => {
       {allIssues.length === 0 ? (
         <Styled.p>Having a normal one</Styled.p>
       ) : (
-        allIssues.map((issue, i) => {
-          const precinctIdentifier = precinctId(issue.precinct);
-          return (
-            <Alert
-              selected={precinctIdentifier === selectedPrecinct}
+        Object.keys(precinctIssues).flatMap((precinctId, pi) => {
+          const { precinct, issues } = precinctIssues[precinctId];
+          console.log(precinct);
+          return issues.map((issue, ii) => (
+            <Issue
+              selected={precinctId === selectedPrecinct}
               key={
                 /* Should maybe be the GEOID10 as unique id */
-                precinctIdentifier + issue.key + i
+                precinctId + issue.message + pi + ii
               }
-              alert={issue}
-              type={issue.type}
+              precinct={precinct}
+              issue={issue}
               onClick={() => {
-                console.log(
-                  "focusing on precinct with the error- " + precinctIdentifier
-                );
-                setSelectedPrecinct(precinctIdentifier);
+                setSelectedPrecinct(precinctId);
               }}
             />
-          );
+          ));
         })
       )}
     </Flex>

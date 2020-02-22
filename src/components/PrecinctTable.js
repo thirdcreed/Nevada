@@ -25,10 +25,11 @@ export const PrecinctTable = () => {
 
   React.useEffect(() => {
     const precincts = flattenPrecincts(data);
-    const precinct = selectedPrecinct && precincts[selectedPrecinct];
+    const candidatesByPrecinct =
+      selectedPrecinct && precincts[selectedPrecinct];
 
-    if (precinct) {
-      setTableData(refinePrecinct(precinct));
+    if (candidatesByPrecinct) {
+      setTableData(refinePrecinct(candidatesByPrecinct));
     }
   }, [selectedPrecinct]);
 
