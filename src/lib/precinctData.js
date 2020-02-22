@@ -268,7 +268,6 @@ const refinePrecinct = candidatesByPrecinct => {
         precinctData
       });
     }
-    console.log(precinctData.viability_threshold);
     return precinctData;
   }, null);
 
@@ -327,14 +326,11 @@ const issuesForObject = objectWithIssueKeys => {
  4 precinct_delegates   # of delegates to be given by precinct                                                                                     
  5 align1               # of votes for candidate in 1st alignment                                                                                  
  6 alignfinal           # of votes for candidate in final alignment   
-
  7 final_del            our calculated # of delegates earned                                                                                       
  8 reported_del         the reported # of delegates earned
-
  9 game_of_chance       string: type of game of chance required                                                                                    
 10 tie_winner           string: winner of an extra delegate in a tie                                                                               
 11 tie_loser            string: loser of an extra delegate in a tie                                                                                
-
 12 viable_loss          logical: if a candidate was viable in 1st round and lost votes going to final round                                        
 13 nonviable_no_realign logical: if a nonviable candidate from 1st round did not realign in final round                                            
 14 alpha_shift          string: name of candidate that had alphabetical shift                                                                      
