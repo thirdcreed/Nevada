@@ -36,6 +36,9 @@ export const Layout = ({ children }) => {
           <Styled.h3 sx={{ color: "gray.2" }}>
             Inspecting the nevada caucus results.
           </Styled.h3>
+          <Styled.code sx={{ display: ["block", "none"] }}>
+            This site is optimized for wide (desktop) displays.
+          </Styled.code>
         </header>
         <main
           sx={{
