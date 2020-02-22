@@ -8,6 +8,8 @@ import CorrelationMatrix from "./CorrelationMatrix";
 import { PrecinctTable } from "./PrecinctTable";
 import { UserContext } from "./Context";
 
+const showMap = process.env.REACT_APP_SHOW_MAP === "true";
+
 const Loading = () => {
   return (
     <Box
@@ -42,7 +44,7 @@ export const Main = () => {
         <Alerts data={data} />
       </Box>
       {/* Center panel */}
-      {process.env.REACT_SHOW_MAP && (
+      {showMap && (
         <Box
           sx={{
             borderLeft: "2px solid",

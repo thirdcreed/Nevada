@@ -6,7 +6,7 @@ export const precinctId = candidatePrecinct => {
 };
 
 export const precinctDisplayName = candidatePrecinct =>
-  `${precinctId(candidatePrecinct)} | ${candidatePrecinct.precinct_full}`;
+  `${precinctId(candidatePrecinct)}`;
 
 export const flattenPrecincts = data => {
   const { electionData } = data;
