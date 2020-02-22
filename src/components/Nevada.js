@@ -1,8 +1,8 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef } from "react";
 import * as d3 from "d3";
 import { Box } from "theme-ui";
 import { UserContext } from "./Context";
-import _ from 'lodash';
+import _ from "lodash";
 
 export default function Nevada(props) {
   const { selectedPrecinct, setSelectedPrecinct } = React.useContext(
@@ -11,16 +11,18 @@ export default function Nevada(props) {
 
   const [nevada, setNevada] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
-  const [_loadError, setLoadError] = React.useState(false);
+  const [mapLoadError, setLoadError] = React.useState(false);
   const [strokeWidth, setStrokeWidth] = React.useState(".5px");
   const [zoom, setZoom] = React.useState("translate(1,1)");
   const [currentZoom, setCurrentZoom] = React.useState(null);
+
+  mapLoadError && console.log({ mapLoadError });
 
   const fetchGeoJson = () => {
     var request = new XMLHttpRequest();
     request.open("GET", "https://nevada-cranks.herokuapp.com/nevada", true);
 
-    request.onload = function () {
+    request.onload = function() {
       if (this.status >= 200 && this.status < 400) {
         // Success!
         var geojson = this.response;
@@ -36,7 +38,7 @@ export default function Nevada(props) {
       }
     };
 
-    request.onerror = function () {
+    request.onerror = function() {
       console.warn("Nevada JSON not loading");
     };
     request.send();
@@ -45,42 +47,53 @@ export default function Nevada(props) {
   React.useEffect(fetchGeoJson, []);
   let nevadaD3Container = useRef(null);
 
-
   if (!nevada) {
-    return <div></div>
+    return <div></div>;
   }
 
-
-  let width = 600, height = 600;
-  var projection = d3.geoAlbers()
+  let width = 600,
+    height = 600;
+  var projection = d3
+    .geoAlbers()
     .scale(4500)
     .rotate([116.4194, 0]) //latitude
     .center([0, 38.8026]) //longitude
     .translate([width / 2, height / 2]);
 
-  let pathGenerator = d3.geoPath()
-    .projection(projection)
+  let pathGenerator = d3.geoPath().projection(projection);
 
   let features = JSON.parse(nevada.geojson).features;
 
   function reset() {
-    setZoom("translate(" + width / 2 + "," + height / 2 + ")scale(" + 1 + ")translate(" + -300 + "," + -300 + ")")
-    setStrokeWidth(.5 + "px");
+    setZoom(
+      "translate(" +
+        width / 2 +
+        "," +
+        height / 2 +
+        ")scale(" +
+        1 +
+        ")translate(" +
+        -300 +
+        "," +
+        -300 +
+        ")"
+    );
+    setStrokeWidth(0.5 + "px");
     // setCurrentZoom(null);
   }
 
   function toPaths(feature) {
-
-    let alerts = props.data.alerts && _.flatten(_.map(props.data.alerts, v => v)).map(alert => alert.GEOID10);
+    let alerts =
+      props.data.alerts &&
+      _.flatten(_.map(props.data.alerts, v => v)).map(alert => alert.GEOID10);
 
     function clicked() {
-      setSelectedPrecinct(feature.properties.GEOID10)
+      setSelectedPrecinct(feature.properties.GEOID10);
       zoomToPrecinct();
     }
 
     function zoomToPrecinct() {
-      var path = d3.geoPath()
-        .projection(projection);
+      var path = d3.geoPath().projection(projection);
       var centroid = path.centroid(feature);
       let x = centroid[0];
       let y = centroid[1];
@@ -93,34 +106,54 @@ export default function Nevada(props) {
 
       if (currentZoom !== feature.properties.GEOID10) {
         setStrokeWidth(1.5 / k + "px");
-        setZoom("translate(" + width / 2 + "," + height / 2 + ") scale(" + k + ") translate(" + -x + "," + -y + ")");
+        setZoom(
+          "translate(" +
+            width / 2 +
+            "," +
+            height / 2 +
+            ") scale(" +
+            k +
+            ") translate(" +
+            -x +
+            "," +
+            -y +
+            ")"
+        );
         setCurrentZoom(feature.properties.GEOID10);
       }
     }
 
-    let fill = feature.properties.GEOID10 === selectedPrecinct ? "url(#diagonal-stripe-2)" :
-      alerts.includes(feature.properties.GEOID10) ? "#ef3a42" : "white";
+    let fill =
+      feature.properties.GEOID10 === selectedPrecinct
+        ? "url(#diagonal-stripe-2)"
+        : alerts.includes(feature.properties.GEOID10)
+        ? "#ef3a42"
+        : "white";
 
     if (selectedPrecinct === feature.properties.GEOID10) {
       zoomToPrecinct();
     }
 
-    return (<path d={pathGenerator(feature)}
-      key={feature.properties.GEOID10}
-      stroke="black"
-      strokeWidth={strokeWidth}
-      fill={fill}
-      onClick={clicked}
-      className="test"
-
-    >
-    </path >)
+    return (
+      <path
+        d={pathGenerator(feature)}
+        key={feature.properties.GEOID10}
+        stroke="black"
+        strokeWidth={strokeWidth}
+        fill={fill}
+        onClick={clicked}
+        className="test"
+      ></path>
+    );
   }
   let clickablePrecincts = features.map(toPaths);
 
   return (
     <div>
-      <button onClick={reset} style={{ position: "relative", top: 50, left: 500 }}>
+      <button
+        onClick={reset}
+        style={{ position: "relative", top: 50, left: 500 }}
+      >
         ZOOM OUT
       </button>
       <div>
@@ -148,17 +181,14 @@ export default function Nevada(props) {
                   height="2"
                 />
               </pattern>
-
             </defs>
-            <g transform={zoom}
-              style={{ transition: "transform 200ms " }}>
-
+            <g transform={zoom} style={{ transition: "transform 200ms " }}>
               {clickablePrecincts}
             </g>
           </svg>
         ) : (
-              <Box>An unexpected error occurred</Box>
-            )}
+          <Box>An unexpected error occurred</Box>
+        )}
       </div>
     </div>
   );

@@ -3,8 +3,8 @@ import React from "react";
 import { jsx, Flex, Box, Styled } from "theme-ui";
 import Nevada from "./Nevada";
 import { Alerts } from "./Alerts";
-import Sankey from "./CorrelationSankey";
-import CorrelationMatrix from "./CorrelationMatrix";
+// import Sankey from "./CorrelationSankey";
+// import CorrelationMatrix from "./CorrelationMatrix";
 import { PrecinctTable } from "./PrecinctTable";
 import { UserContext } from "./Context";
 
@@ -76,6 +76,6 @@ export const Main = () => {
       </Flex>
     </Flex>
   ) : (
-      <Loading />
-    );
+    <Loading />
+  );
 };

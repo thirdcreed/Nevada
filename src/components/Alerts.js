@@ -1,7 +1,6 @@
 /** @jsx jsx */
 import React from "react";
 import { jsx, Flex, Styled } from "theme-ui";
-import _ from "lodash";
 import { UserContext } from "./Context";
 import NounCard from "./noun_card.js";
 import { precinctDisplayName } from "../lib/precinctData";
@@ -62,26 +61,26 @@ export const Alerts = () => {
       {allIssues.length === 0 ? (
         <Styled.p>Having a normal one</Styled.p>
       ) : (
-          Object.keys(refinedPrecincts).flatMap(precinctId => {
-            const { meta, issues } = refinedPrecincts[precinctId];
-            return issues.map((issue, ii) => {
-              return (
-                <Issue
-                  selected={precinctId === selectedPrecinct}
-                  key={
-                    /* Should maybe be the GEOID10 as unique id */
-                    precinctId + ii
-                  }
-                  precinct={meta}
-                  issue={issue}
-                  onClick={() => {
-                    setSelectedPrecinct(precinctId);
-                  }}
-                />
-              );
-            });
-          })
-        )}
+        Object.keys(refinedPrecincts).flatMap(precinctId => {
+          const { meta, issues } = refinedPrecincts[precinctId];
+          return issues.map((issue, ii) => {
+            return (
+              <Issue
+                selected={precinctId === selectedPrecinct}
+                key={
+                  /* Should maybe be the GEOID10 as unique id */
+                  precinctId + ii
+                }
+                precinct={meta}
+                issue={issue}
+                onClick={() => {
+                  setSelectedPrecinct(precinctId);
+                }}
+              />
+            );
+          });
+        })
+      )}
     </Flex>
   );
 };
