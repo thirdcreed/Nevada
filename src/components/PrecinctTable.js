@@ -1,33 +1,33 @@
 /** @jsx jsx */
 import React from "react";
 import { jsx } from "theme-ui";
-import { candidateDisplayName, flattenPrecincts } from "../lib/precinctData";
+import {
+  precinctId,
+  candidateDisplayName,
+  flattenPrecincts,
+  _rowFixture,
+  refinePrecinct
+} from "../lib/precinctData";
 import { Styled, Box, Button } from "theme-ui";
 import { UserContext } from "./Context";
 
 const boolToString = b => (b ? "Yes" : "No");
 
 export const PrecinctTable = () => {
-  const { selectedPrecinct, data } = React.useContext(UserContext);
-
-  const precincts = flattenPrecincts(data);
-
-  // const tableData = precincts.find(p => p.GEOID10 === selectedPrecinct);
-  const tableData = precincts[0];
-  console.log(tableData);
-  // debugger;
-  if (!tableData) {
-    return null;
-  }
-
-  return null;
-
-  console.log("why does this work", selectedPrecinct);
-
-  const { name, result } = tableData;
   const [showVotes, setShowVotes] = React.useState(true);
   const [showRules, setShowRules] = React.useState(false);
   const [showIssues, setShowIssues] = React.useState(false);
+  const [tableData, setTableData] = React.useState(null);
+  const { selectedPrecinct, data } = React.useContext(UserContext);
+
+  React.useEffect(() => {
+    const precincts = flattenPrecincts(data);
+    const precinct = selectedPrecinct && precincts[selectedPrecinct];
+
+    if (precinct) {
+      setTableData(refinePrecinct(precinct));
+    }
+  }, [selectedPrecinct]);
 
   // TODO: consider making these toggles in each section and passing in the raw setter
   // This way we could use useEffect() to set the initial show state based on local logic
@@ -42,26 +42,30 @@ export const PrecinctTable = () => {
     setShowIssues(!showIssues);
   };
 
-  return (
+  return tableData ? (
     <Box sx={{ width: "100%" }}>
       <Styled.h3>{selectedPrecinct}</Styled.h3>
       <Styled.table sx={{ width: "100%" }}>
         <VotesSection
           show={showVotes}
           toggleShow={toggleShowVotes}
-          result={result}
+          data={tableData}
         />
         <RulesSection
           show={showRules}
           toggleShow={toggleShowRules}
-          result={result}
+          data={tableData}
         />
         <IssuesSection
           show={showIssues}
           toggleShow={toggleShowIssues}
-          result={result}
+          data={tableData}
         />
       </Styled.table>
+    </Box>
+  ) : (
+    <Box sx={{ width: "100%" }}>
+      <Styled.h3>Select a precinct</Styled.h3>
     </Box>
   );
 };
@@ -86,8 +90,9 @@ const SectionHeader = ({ title, subtitle = "", toggleShow, show }) => {
   );
 };
 
-const VotesSection = ({ result, show, toggleShow }) => {
-  const allCandidateKeys = Object.keys(result.firstRoundVotes);
+const VotesSection = ({ data, show, toggleShow }) => {
+  const { candidates } = data;
+  const allCandidateKeys = Object.keys(candidates);
 
   return (
     <>
@@ -114,29 +119,28 @@ const VotesSection = ({ result, show, toggleShow }) => {
             </Styled.tr>
           </thead>
           <tbody>
-            {allCandidateKeys.map(k => (
-              <Styled.tr key={k}>
-                <Styled.td>
-                  <Styled.p>{candidateDisplayName(k) || k}</Styled.p>
-                </Styled.td>
-                <Styled.td>
-                  <Styled.p key={k}>{result.firstRoundVotes[k]}</Styled.p>
-                </Styled.td>
-                <Styled.td>
-                  <Styled.p key={k}>{result.secondRoundVotes[k]}</Styled.p>
-                </Styled.td>
-                <Styled.td>
-                  <Styled.p key={k}>
-                    {result.expectedOutcome.awardedSDEs[k]}
-                  </Styled.p>
-                </Styled.td>
-                <Styled.td>
-                  <Styled.p key={k}>
-                    {result.actualOutcome.awardedSDEs[k]}
-                  </Styled.p>
-                </Styled.td>
-              </Styled.tr>
-            ))}
+            {allCandidateKeys.map(k => {
+              const candidate = candidates[k];
+              return (
+                <Styled.tr key={k}>
+                  <Styled.td>
+                    <Styled.p>{candidateDisplayName(k) || k}</Styled.p>
+                  </Styled.td>
+                  <Styled.td>
+                    <Styled.p>{candidate["align1"]}</Styled.p>
+                  </Styled.td>
+                  <Styled.td>
+                    <Styled.p>{candidate["alignfinal"]}</Styled.p>
+                  </Styled.td>
+                  <Styled.td>
+                    <Styled.p>{candidate["caucus_formula_result"]}</Styled.p>
+                  </Styled.td>
+                  <Styled.td>
+                    <Styled.p>{candidate["final_del"]}</Styled.p>
+                  </Styled.td>
+                </Styled.tr>
+              );
+            })}
           </tbody>
         </>
       )}
@@ -146,87 +150,92 @@ const VotesSection = ({ result, show, toggleShow }) => {
 
 const RulesSection = ({ result, show, toggleShow }) => {
   return (
-    <>
-      <SectionHeader
-        title="Caucus Rules"
-        show={show}
-        toggleShow={toggleShow}
-      ></SectionHeader>
-      {show && (
-        <>
-          <thead>
-            <Styled.tr>
-              <Styled.th colSpan="1" />
-              <Styled.th colSpan="2">
-                <Styled.h5>Expected</Styled.h5>
-              </Styled.th>
-              <Styled.th colSpan="2">
-                <Styled.h5>Actual</Styled.h5>
-              </Styled.th>
-            </Styled.tr>
-          </thead>
-          <tbody>
-            <Styled.tr>
-              <Styled.td colSpan="1">
-                <Styled.p>Coin Toss</Styled.p>
-              </Styled.td>
-              <Styled.td colSpan="2">
-                <Styled.p>
-                  {boolToString(result.expectedOutcome.coinToss)}
-                </Styled.p>
-              </Styled.td>
-              <Styled.td colSpan="2">
-                <Styled.p>
-                  {boolToString(result.actualOutcome.coinToss)}
-                </Styled.p>
-              </Styled.td>
-            </Styled.tr>
-            <Styled.tr>
-              <Styled.td colSpan="1">
-                <Styled.p>Duel</Styled.p>
-              </Styled.td>
-              <Styled.td colSpan="2">
-                <Styled.p>
-                  {boolToString(result.expectedOutcome.coinToss)}
-                </Styled.p>
-              </Styled.td>
-              <Styled.td colSpan="2">
-                <Styled.p>
-                  {boolToString(result.actualOutcome.coinToss)}
-                </Styled.p>
-              </Styled.td>
-            </Styled.tr>
-          </tbody>
-        </>
-      )}
-    </>
+    null || (
+      <>
+        <SectionHeader
+          title="Caucus Rules"
+          show={show}
+          toggleShow={toggleShow}
+        ></SectionHeader>
+        {show && (
+          <>
+            <thead>
+              <Styled.tr>
+                <Styled.th colSpan="1" />
+                <Styled.th colSpan="2">
+                  <Styled.h5>Expected</Styled.h5>
+                </Styled.th>
+                <Styled.th colSpan="2">
+                  <Styled.h5>Actual</Styled.h5>
+                </Styled.th>
+              </Styled.tr>
+            </thead>
+            <tbody>
+              <Styled.tr>
+                <Styled.td colSpan="1">
+                  <Styled.p>Coin Toss</Styled.p>
+                </Styled.td>
+                <Styled.td colSpan="2">
+                  <Styled.p>
+                    {boolToString(result.expectedOutcome.coinToss)}
+                  </Styled.p>
+                </Styled.td>
+                <Styled.td colSpan="2">
+                  <Styled.p>
+                    {boolToString(result.actualOutcome.coinToss)}
+                  </Styled.p>
+                </Styled.td>
+              </Styled.tr>
+              <Styled.tr>
+                <Styled.td colSpan="1">
+                  <Styled.p>Duel</Styled.p>
+                </Styled.td>
+                <Styled.td colSpan="2">
+                  <Styled.p>
+                    {boolToString(result.expectedOutcome.coinToss)}
+                  </Styled.p>
+                </Styled.td>
+                <Styled.td colSpan="2">
+                  <Styled.p>
+                    {boolToString(result.actualOutcome.coinToss)}
+                  </Styled.p>
+                </Styled.td>
+              </Styled.tr>
+            </tbody>
+          </>
+        )}
+      </>
+    )
   );
 };
 
-const IssuesSection = ({ result, show, toggleShow }) => {
-  const issueCount = result.issues.length;
-  const subtitle = `${issueCount} issue${
-    issueCount === 1 ? "" : "s"
-  } identified`;
+const IssuesSection = ({ data, show, toggleShow }) => {
+  // const issueCount = result.issues.length;
+  // const subtitle = `${issueCount} issue${
+  //   issueCount === 1 ? "" : "s"
+  // } identified`;
+  console.log(data);
   return (
-    <>
-      <SectionHeader
-        title="Possible Issues"
-        subtitle={subtitle}
-        show={show}
-        toggleShow={toggleShow}
-      ></SectionHeader>
-      {show && (
-        <tbody>
-          <tr>
-            <Styled.td colSpan="5">
-              {result.issues.map(iss => (
-                <Styled.p key={iss}>- {iss}</Styled.p>
-              ))}
-            </Styled.td>
-          </tr>
-        </tbody>
-      )}
-    </>
+    null || (
+      <>
+        <SectionHeader
+          title="Possible Issues"
+          subtitle={"subtitle"}
+          show={show}
+          toggleShow={toggleShow}
+        ></SectionHeader>
+        {show && (
+          <tbody>
+            <tr>
+              <Styled.td colSpan="5">
+                {data.issues.map(iss => (
+                  <Styled.p key={iss}>- {iss}</Styled.p>
+                ))}
+              </Styled.td>
+            </tr>
+          </tbody>
+        )}
+      </>
+    )
   );
 };

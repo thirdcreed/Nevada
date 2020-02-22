@@ -3,35 +3,7 @@ import React from "react";
 import { jsx, Flex, Styled } from "theme-ui";
 import { UserContext } from "./Context";
 import NounCard from "./noun_card.js";
-
-// 12 viable_loss          logical: if a candidate was viable in 1st round and lost votes going to final round
-// 13 nonviable_no_realign logical: if a nonviable candidate from 1st round did not realign in final round
-// 14 alpha_shift          string: name of candidate that had alphabetical shift
-// 15 has_alpha_shift      logical: alphabetical shift in vote reporting detected. warning, not error
-// 16 more_final_votes     logical: more votes in final alignment than 1st alignment
-// 17 fewer_final_votes    logical: fewer votes in final alignment than 1st. warning, not error
-// 18 del_counts_diff      logical: our delegate counts differ from those reported
-// 19 extra_del_given      logical: too many delegates given out but all candidates had 1 delegate, so an extra delegate was given. warning, not error
-
-// for a given message type, a string or precinct => string function
-const messageMap = {
-  countySucks: precinct => `${precinct.county} sucks`,
-  viableLoss: "1st-round viable candidate lost votes in round 2",
-  nonviableNoRealign:
-    "1st-round nonviable candidate did not realign in round 2",
-  alphaShift: precinct =>
-    `Alphabetical shift in voting detected for ${precinct["has_alpha_shift"]}`,
-  moreFinalVotes: `More votes in final alignment than 1st alignment`,
-  fewerFinalVotes: `Fewer votes in final alignment than 1st alignment`,
-  delCountsDiff: "Our delegate counts differ from those reported",
-  extraDelGiven:
-    "Too many delegates given out but all candidates had 1 delegate, so an extra delegate was given"
-};
-
-const messageForIssueType = (key, precinct) => {
-  const message = messageMap[key] || key;
-  return typeof message === "function" ? message(precinct) : message;
-};
+import { readableMessage, precinctId } from "../lib/precinctData";
 
 // create an issue with key common data and precinct nested inside
 const groupedIssues = (issues, issueType) =>
@@ -39,7 +11,7 @@ const groupedIssues = (issues, issueType) =>
     issues[key].map(precinct => {
       return {
         precinct,
-        message: messageForIssueType(key, precinct),
+        message: readableMessage(key, precinct),
         type: issueType,
         key
       };
@@ -102,6 +74,7 @@ export const Alerts = ({ data }) => {
   const allWarnings = groupedIssues(warnings, "warning");
   const allIssues = allAlerts.concat(allWarnings).slice(0, 500);
   console.log(allIssues);
+  // debugger;
   return (
     <Flex
       sx={{
@@ -115,7 +88,7 @@ export const Alerts = ({ data }) => {
         <Styled.p>Having a normal one</Styled.p>
       ) : (
         allIssues.map((issue, i) => {
-          const precinctIdentifier = issue.precinct["GEOID10"];
+          const precinctIdentifier = precinctId(issue.precinct);
           return (
             <Alert
               selected={precinctIdentifier === selectedPrecinct}

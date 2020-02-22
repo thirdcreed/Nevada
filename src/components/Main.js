@@ -44,17 +44,19 @@ export const Main = () => {
         <Alerts data={data} />
       </Box>
       {/* Center panel */}
-      <Box
-        sx={{
-          borderLeft: "2px solid",
-          borderColor: "gray.1",
-          width: "600px",
-          flex: "1 0 auto",
-          py: [2, 3]
-        }}
-      >
-        <Nevada data={data}></Nevada>
-      </Box>
+      {process.env.REACT_SHOW_MAP && (
+        <Box
+          sx={{
+            borderLeft: "2px solid",
+            borderColor: "gray.1",
+            width: "600px",
+            flex: "1 0 auto",
+            py: [2, 3]
+          }}
+        >
+          <Nevada data={data}></Nevada>
+        </Box>
+      )}
       {/* Right panel */}
       <Flex
         sx={{
