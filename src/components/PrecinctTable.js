@@ -76,8 +76,8 @@ export const PrecinctTable = () => {
       </Styled.table>
     </Box>
   ) : (
-    <SelectAPrecinct />
-  );
+      <SelectAPrecinct />
+    );
 };
 
 const SelectAPrecinct = () => (
@@ -107,7 +107,6 @@ const SectionHeader = ({ title, subtitle = "", toggleShow, show }) => {
 };
 
 const VotesSection = ({ data, show, toggleShow }) => {
-  console.log(data);
   const { candidates, precinct } = data;
   const { viability_threshold: viabilityThreshold } = precinct;
   const allCandidateKeys = Object.keys(candidates);
