@@ -11,10 +11,9 @@ export const Layout = ({ children }) => {
           flexDirection: "column"
         }}
       >
-        <header sx={{ bg: "background", p: [2, 3], textAlign: "center" }}>
+        <header sx={{ bg: "background", p: [2, 3], textAlign: "center", borderBottom:"2px solid black"}}>
           <Styled.h1
             sx={{
-              textDecoration: "underline",
               color: "gray.1",
               px: [2, 5],
               fontWeight: 4
@@ -29,7 +28,6 @@ export const Layout = ({ children }) => {
         </header>
         <main
           sx={{
-            py: 3,
             flex: "1 1 auto",
             width: "100%"
           }}
@@ -37,7 +35,7 @@ export const Layout = ({ children }) => {
           {children}
         </main>
         <footer
-          sx={{ bg: "primary", py: [2, 3], px: [2, 5], color: "background" }}
+          sx={{ bg: "white", py: [2, 3], px: [2, 5], color: "black", borderTop:"2px solid black"}}
         >
           <Styled.p sx={{ color: "background" }}>© etc etc</Styled.p>
           <Styled.a

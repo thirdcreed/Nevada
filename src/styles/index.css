@@ -33,8 +33,10 @@ font-style: normal;
   padding: 4px;
   display:flex;
   font-weight: 500;
-  flex-direction:column;
+  flex-direction:row;
 }
+
+
 
 .title {
   margin-left:4px;
@@ -67,11 +69,7 @@ font-style: normal;
   );
 }
 
-.content-top {
-  display:flex;
-  justify-content:space-between;
-  width:100%;
-}
+
 
 .description {
   width:100%;

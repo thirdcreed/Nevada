@@ -21,7 +21,8 @@ const colors = {
 const fontFamilies = {
   mono: "Fira Mono",
   sans: "Roboto, system-ui, sans-serif",
-  serif: "itc-american-typewriter, serif"
+  serif: "itc-american-typewriter, serif",
+  work: "Work"
 };
 
 const fonts = {
@@ -86,17 +87,23 @@ export const theme = {
     },
     h1: {
       color: "text",
-      fontFamily: "heading",
+      fontFamily: "Work Sans",
       lineHeight: "1.2",
+      letterSpacing: "-0.06em",
       fontWeight: "heading",
-      fontSize: 5
+      fontSize: 96,
+      m: 0,
+      p: 0,
+
     },
     h2: {
       color: "text",
       fontFamily: "heading",
       lineHeight: "1.2",
       fontWeight: "heading",
-      fontSize: 4
+      m:2,
+      p:2,
+      fontSize: 5
     },
     h3: {
       color: "text",
@@ -189,7 +196,6 @@ export const theme = {
       fontWeight: "heading",
       fontFamily: "heading",
       fontSize: 5,
-      borderBottom: "2px solid black",
     },
     Text: {
       lineHeight: "body",

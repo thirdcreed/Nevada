@@ -4,9 +4,12 @@ import { Box } from "theme-ui";
 import { UserContext } from "./Context";
 import _ from 'lodash';
 export default function Nevada(props) {
-  const { setSelectedPrecinct, selectedPrecinct } = React.useContext(
+
+  const { selectedPrecinct, setSelectedPrecinct } = React.useContext(
     UserContext
   );
+
+
 
   const [nevada, setNevada] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
@@ -42,12 +45,19 @@ export default function Nevada(props) {
     React.useEffect(fetchGeoJson, []);
 
 
+
     let nevadaD3Container = useRef(null);
+  
+
     useEffect(
         () => {
-        
-            if ( !loading && !!nevada && !!nevadaD3Container.current) {
-               console.log('!!!', props.data)
+          console.log("outer")
+            if ( !!props.data && !loading && nevadaD3Container.current && !!nevada ) {
+
+              console.log('inner',props.selectedPrecinct, selectedPrecinct)
+              let bob = selectedPrecinct
+
+         
                 let nevadaJson = JSON.parse(nevada.geojson);
                 let svg = d3.select(nevadaD3Container.current);
                 let width = 600;
@@ -56,7 +66,7 @@ export default function Nevada(props) {
                 let alerts = _.filter(props.data.alerts, v => v.length).map(alertType=> alertType.map(alert => alert.GEOID10)); 
                 console.log(alerts);
                 let selectedComponent = false;
-                let selected = '';
+
 
                 var projection = d3.geoAlbers()
                     .scale(4500)
@@ -74,8 +84,10 @@ export default function Nevada(props) {
                 d3.select("button")
                     .on("click", reset);
 
-                function clicked(d, t, e) {
-                     setSelectedPrecinct('test');
+                function clicked(d) {
+            
+                     setSelectedPrecinct(d.properties.GEOID10);
+                     console.log(d.properties);
                     var path = d3.geoPath()
                         .projection(projection);
                     var centroid = path.centroid(d);
@@ -87,56 +99,67 @@ export default function Nevada(props) {
                     );
                     var scale = d3.scaleLinear([0, largestDimension], [0.0, 4.0]);
                     let k = scale(50);
-
+                    console.log({selectedPrecinct});
+                    console.log({props})
                 
                     selectedComponent && selectedComponent
-                    .attr("fill", d => {console.log(alerts); return alerts.includes(d.properties.GEOID10) ? "#ef3a42" : "white"})
+                    .attr("fill", d => {console.log(alerts); return d.properties.GEOID10 === bob ? "url(#diagonal-stripe-2)" : alerts.includes(d.properties.GEOID10) ? "#ef3a42" : "white"})
                         
-                    selected = d.properties.GEOID10;
 
                     selectedComponent = d3.select(this).attr('fill','url(#diagonal-stripe-2)');
                     
-                    nevadaPath
+                    nevadaPath    
                         .transition()
                         .duration(750)
+                        .style("stroke-width", 1.5 / k + "px")
                         .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
-                        .style("stroke-width", 1.5 / k + "px");
+                    
                 }
 
                 function handleMouseOver() {
                     d3.select(this).attr('fill', "lightgray");
                 }
 
-                function handleMouseOut() {
+                console.log('wtf', bob);
+                let test = function(d){
+                  console.log('bob',bob); 
+                  return d.properties.GEOID10 === bob ? "url(#diagonal-stripe-2)" : alerts.includes(d.properties.GEOID10) ? "#ef3a42" : "white";
+                }
+                  
+                function handleMouseOut() {  
+                  console.log('on this level what is bob', bob) 
                     d3.select(this)
-                    .attr("fill", d => {return d.properties.GEOID10 === selected ? "url(#diagonal-stripe-2)" : alerts.includes(d.properties.GEOID10) ? "#ef3a42" : "white"})
+                    .attr("fill", test)
                 }
 
-                 let nevadaPath = svg
+                  let nevadaPath = svg
                     .append("g")
                     .selectAll("path")
                     .data(nevadaJson.features)
                     .enter()
                     .append("path")
                     .attr("d", d3.geoPath()
-                        .projection(projection));
-
-                nevadaPath.attr('stroke', "black")
+                    .projection(projection))
+                    .attr('stroke', "black")
                     .attr('stroke-width', '.5px')
-                    .attr("fill", d => {return d.properties.GEOID10 === selected ? "url(#diagonal-stripe-2)" : alerts.includes(d.properties.GEOID10) ? "#ef3a42" : "white"})
+                    .attr("fill", d => {return d.properties.GEOID10 === bob ? "url(#diagonal-stripe-2)" : alerts.includes(d.properties.GEOID10) ? "#ef3a42" : "white"})
                     .on('mouseover', handleMouseOver) 
                     .on("mouseout", handleMouseOut)
                     .on("click", clicked)
+                    
+                    
                     return function(){
-                       nevadaD3Container.current = null;
+                     // nevadaPath.remove()
+
+                      //  nevadaD3Container.current = null;
                     }
             }
             
         },
-        [loading, props.data, nevada, nevadaD3Container.current])
+        [nevada && nevada, nevadaD3Container,loading, props.data])
 
     return (
-    <React.Fragment>
+    <div>
       <button style={{ position: "relative", top: 50, left: 500 }}>
         ZOOM OUT
       </button>
@@ -171,6 +194,6 @@ export default function Nevada(props) {
           <Box>An unexpected error occurred</Box>
         )}
       </div>
-    </React.Fragment>
+    </div>
   );
 }
