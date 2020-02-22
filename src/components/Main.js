@@ -6,8 +6,9 @@ import { Alerts } from "./Alerts";
 import Sankey from "./CorrelationSankey";
 import CorrelationMatrix from "./CorrelationMatrix";
 import { PrecinctTable } from "./PrecinctTable";
+import { UserContext } from "./Context";
 
-export const Main = ({ data }) => {
+export const Main = ({data}) => {
   console.log("DATA:", data);
   return (
     <Flex
@@ -26,20 +27,17 @@ export const Main = ({ data }) => {
       {/* Center panel */}
       <Box
         sx={{
-          borderLeft: "1px solid",
-          borderColor: "gray.1",
-          mt: [2, 0],
-          p: [2, 3]
+          borderLeft: "2px solid",
+          borderColor: "black",
         }}
       >
-        <Nevada data={data}></Nevada> 
-        
+         <Nevada data={data}></Nevada> 
       </Box>
       {/* Right panel */}
       <Flex
         sx={{
-          borderLeft: "1px solid",
-          borderColor: "gray.1",
+          borderLeft: "2px solid",
+          borderColor: "black",
           flexDirection: "column",
           mt: [2, 0],
           flex: "1",
@@ -47,7 +45,7 @@ export const Main = ({ data }) => {
           p: [2, 3],
           justifyContent: "space-between"
         }}
-      ><PrecinctTable />
+      ><PrecinctTable/>
         {/* <CorrelationMatrix></CorrelationMatrix>
         <Sankey /> */}
       </Flex>

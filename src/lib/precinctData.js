@@ -30,8 +30,6 @@ export const massageResult = csv => {
     return row;  //adapt model however we like.
   }
 
-
- 
   function isFalse(row,prop){
     if(!row[prop]){
       return true;
@@ -39,7 +37,6 @@ export const massageResult = csv => {
     return row[prop] === "FALSE" || row[prop] === "NA";
   }
 
-  
   let viableLoss = _.filter(jsResults, row => !isFalse(row,'viable_loss')).map(toAlerts);
   let moreFinalVotes = _.filter(jsResults, row => !isFalse(row,'more_final_votes')).map(toAlerts);;
   let nonviableNoRealign = _.filter(jsResults, row => !isFalse(row,'nonviable_no_realign')).map(toAlerts);;
@@ -51,8 +48,6 @@ export const massageResult = csv => {
 
   let alerts = {viableLoss, moreFinalVotes, nonviableNoRealign}
   let warnings = {delCountsDiff, hasAlphaShift, fewerFinalVotes, extraDelGiven};
-
-
   return {electionData, alerts, warnings};
 };
 

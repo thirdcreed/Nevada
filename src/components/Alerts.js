@@ -2,6 +2,7 @@
 import React from "react";
 import { jsx, Flex, Box, Styled } from "theme-ui";
 import { UserContext } from "./Context";
+import NounCard from "./noun_card.js"
 
 // 12 viable_loss          logical: if a candidate was viable in 1st round and lost votes going to final round
 // 13 nonviable_no_realign logical: if a nonviable candidate from 1st round did not realign in final round
@@ -80,11 +81,11 @@ export const Alert = ({ type, alert, onClick, selected }) => {
       <div className="title">Precinct {precinct["precinct_full"]}</div>
     </div> 
     <div className="bottom">
-        <div className="content-top">
+        <div className="content-left">
           <div className="error-type">Actually wrong</div>
-          <div className="icon">ICON</div>
+          <div className="description">{alert.message}</div>
         </div>   
-    <div className="description">{alert.message}</div>
+      <NounCard style={{height:"65px", width:"65px;"}}></NounCard>
     </div> 
   
   </div>
@@ -115,7 +116,7 @@ export const Alerts = ({ data }) => {
         <Styled.p>Having a normal one</Styled.p>
       ) : (
         allIssues.map((issue, i) => {
-          const precinctIdentifier = issue.precinct["precinct_full"];
+          const precinctIdentifier = issue.precinct["GEOID10"];
           return (
             <Alert
               selected={precinctIdentifier === selectedPrecinct}

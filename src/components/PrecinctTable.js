@@ -3,12 +3,19 @@ import React from "react";
 import { jsx } from "theme-ui";
 import { precinctData, candidateDisplayName } from "../lib/precinctData";
 import { Styled, Box, Button } from "theme-ui";
+import { UserContext } from "./Context";
 
 const mockData = precinctData();
 
 const boolToString = b => (b ? "Yes" : "No");
 
 export const PrecinctTable = ({ data = mockData }) => {
+  const { selectedPrecinct, setSelectedPrecinct } = React.useContext(
+    UserContext
+  );
+
+  console.log('why does this work', selectedPrecinct)
+  
   const { name, result } = data;
   const [showVotes, setShowVotes] = React.useState(false);
   const [showRules, setShowRules] = React.useState(false);
@@ -29,7 +36,7 @@ export const PrecinctTable = ({ data = mockData }) => {
 
   return (
     <Box sx={{ width: "100%" }}>
-      <Styled.h3>{name}</Styled.h3>
+      <Styled.h3>{selectedPrecinct}</Styled.h3>
       <Styled.table sx={{ width: "100%" }}>
         <VotesSection
           show={showVotes}
