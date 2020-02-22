@@ -3,7 +3,6 @@ import * as d3 from "d3";
 import { Box } from "theme-ui";
 import { UserContext } from "./Context";
 import _ from 'lodash';
-import { Transition } from 'react-transition-group';
 
 export default function Nevada(props) {
   const { selectedPrecinct, setSelectedPrecinct } = React.useContext(
@@ -69,18 +68,19 @@ export default function Nevada(props) {
   function reset() {
     setZoom("translate(" + width / 2 + "," + height / 2 + ")scale(" + 1 + ")translate(" + -300 + "," + -300 + ")")
     setStrokeWidth(.5 + "px");
-    setCurrentZoom(null);
+    // setCurrentZoom(null);
   }
 
   function toPaths(feature) {
 
     let alerts = _.filter(props.data.alerts, v => v.length).map(alertType => alertType.map(alert => alert.GEOID10));
 
-
-
     function clicked() {
-      setSelectedPrecinct(feature.properties.GEOID10);
-      setCurrentZoom(feature.properties.GEOID10);
+      setSelectedPrecinct(feature.properties.GEOID10)
+      zoomToPrecinct();
+    }
+
+    function zoomToPrecinct() {
       var path = d3.geoPath()
         .projection(projection);
       var centroid = path.centroid(feature);
@@ -95,16 +95,20 @@ export default function Nevada(props) {
       console.log({ selectedPrecinct });
       console.log({ props })
 
-      setStrokeWidth(1.5 / k + "px");
-      setZoom("translate(" + width / 2 + "," + height / 2 + ") scale(" + k + ") translate(" + -x + "," + -y + ")");
 
+      if (currentZoom !== feature.properties.GEOID10) {
+        setStrokeWidth(1.5 / k + "px");
+        setZoom("translate(" + width / 2 + "," + height / 2 + ") scale(" + k + ") translate(" + -x + "," + -y + ")");
+        setCurrentZoom(feature.properties.GEOID10);
+      }
     }
+
     let fill = feature.properties.GEOID10 === selectedPrecinct ? "url(#diagonal-stripe-2)" :
       alerts.includes(feature.properties.GEOID10) ? "#ef3a42" : "white";
 
-    // if (currentZoom !== selectedPrecinct && currentZoom !== null) {
-    //   clicked();
-    // }
+    if (selectedPrecinct === feature.properties.GEOID10) {
+      zoomToPrecinct();
+    }
 
     return (<path d={pathGenerator(feature)}
       key={feature.GEOID10}
