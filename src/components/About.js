@@ -6,6 +6,7 @@ const frontendRepo = "https://github.com/thirdcreed/Nevada";
 const dataRepo = "https://github.com/GOliveira10/Nevada-Caucus-Monitoring";
 const twitterLink = "https://twitter.com/uglycaucus";
 const emailLink = "mailto:uglycauc.us@gmail.com";
+const paypal = "https://www.paypal.com/paypalme2/uglycaucus";
 export const About = () => {
   return (
     <Box sx={{ width: ["100%", "75%"], mx: 4, px: [2, 3] }}>
@@ -45,6 +46,11 @@ export const About = () => {
         Twitter:{" "}
         <Styled.a href={twitterLink} target="_blank">
           @uglycaucus
+        </Styled.a>
+      </Styled.p>
+      <Styled.p>
+        <Styled.a href={paypal} target="_blank">
+          paypal.me/uglycaucus
         </Styled.a>
       </Styled.p>
     </Box>
