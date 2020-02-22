@@ -70,18 +70,11 @@ export const Issue = ({ precinct, issue, onClick, selected }) => {
 };
 
 export const Alerts = () => {
-  const { selectedPrecinct, setSelectedPrecinct, data } = React.useContext(
-    UserContext
-  );
-
-  const precincts = flattenPrecincts(data);
-
-  const refinedPrecincts = Object.keys(precincts).reduce((acc, pkey) => {
-    const candidatesByPrecinct = precincts[pkey];
-    const refined = refinePrecinct(candidatesByPrecinct);
-    acc[pkey] = refined;
-    return acc;
-  }, {});
+  const {
+    selectedPrecinct,
+    setSelectedPrecinct,
+    data: { refined: refinedPrecincts }
+  } = React.useContext(UserContext);
 
   const allIssues = Object.keys(refinedPrecincts).flatMap(
     p => refinedPrecincts[p].issues
@@ -99,7 +92,7 @@ export const Alerts = () => {
       {allIssues.length === 0 ? (
         <Styled.p>Having a normal one</Styled.p>
       ) : (
-        Object.keys(refinedPrecincts).flatMap((precinctId, pi) => {
+        Object.keys(refinedPrecincts).flatMap(precinctId => {
           const { meta, issues } = refinedPrecincts[precinctId];
           return issues.map((issue, ii) => {
             return (

@@ -1,13 +1,7 @@
 /** @jsx jsx */
 import React from "react";
 import { jsx } from "theme-ui";
-import {
-  candidateDisplayName,
-  precinctDisplayName,
-  flattenPrecincts,
-  _rowFixture,
-  refinePrecinct
-} from "../lib/precinctData";
+import { candidateDisplayName, precinctDisplayName } from "../lib/precinctData";
 import { Styled, Box, Button } from "theme-ui";
 import { UserContext } from "./Context";
 
@@ -30,12 +24,10 @@ export const PrecinctTable = () => {
 
   React.useEffect(() => {
     if (selectedPrecinct) {
-      const precincts = flattenPrecincts(data);
-      const candidatesByPrecinct =
-        selectedPrecinct && precincts[selectedPrecinct];
+      const { refined } = data;
 
-      if (candidatesByPrecinct) {
-        setTableData(refinePrecinct(candidatesByPrecinct));
+      if (selectedPrecinct) {
+        setTableData(refined[selectedPrecinct]);
       }
     } else {
       setTableData(null);

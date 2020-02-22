@@ -59,6 +59,15 @@ export const massageResult = csv => {
     {}
   );
 
+  const flattened = flattenPrecincts({ electionData });
+
+  const refined = Object.keys(flattened).reduce((acc, pkey) => {
+    const candidatesByPrecinct = flattened[pkey];
+    const refined = refinePrecinct(candidatesByPrecinct);
+    acc[pkey] = refined;
+    return acc;
+  }, {});
+
   function toAlerts(row) {
     return row; //adapt model however we like.
   }
@@ -108,7 +117,7 @@ export const massageResult = csv => {
     fewer_final_votes,
     extra_del_given
   };
-  return { electionData, alerts, warnings };
+  return { electionData, alerts, warnings, refined };
 };
 
 const candidateNames = {
