@@ -76,20 +76,20 @@ export const Alert = ({ type, alert, onClick, selected }) => {
     //   <Styled.p sx={{ color, mb: 0 }}>{alert.message}</Styled.p>
     // </Box>
     <div className={`card ${selected ? "selected" : ""}`} onClick={onClick} >
-  <div className="container">
-    <div className="top error">
-      <div className="title">Precinct {precinct["precinct_full"]}</div>
-    </div> 
-    <div className="bottom">
-        <div className="content-left">
-          <div className="error-type">Actually wrong</div>
-          <div className="description">{alert.message}</div>
-        </div>   
-      <NounCard style={{height:"65px", width:"65px;"}}></NounCard>
-    </div> 
-  
-  </div>
-</div>
+      <div className="container">
+        <div className="top error">
+          <div className="title">Precinct {precinct["precinct_full"]}</div>
+        </div>
+        <div className="bottom">
+          <div className="content-left">
+            <div className="error-type">Actually wrong</div>
+            <div className="description">{alert.message}</div>
+          </div>
+          <NounCard style={{ height: "65px", width: "65px;" }}></NounCard>
+        </div>
+
+      </div>
+    </div>
   );
 };
 
@@ -115,27 +115,27 @@ export const Alerts = ({ data }) => {
       {allIssues.length === 0 ? (
         <Styled.p>Having a normal one</Styled.p>
       ) : (
-        allIssues.map((issue, i) => {
-          const precinctIdentifier = issue.precinct["GEOID10"];
-          return (
-            <Alert
-              selected={precinctIdentifier === selectedPrecinct}
-              key={
-                /* Should maybe be the GEOID10 as unique id */
-                precinctIdentifier + issue.key + i
-              }
-              alert={issue}
-              type={issue.type}
-              onClick={() => {
-                console.log(
-                  "focusing on precinct with the error- " + precinctIdentifier
-                );
-                setSelectedPrecinct(precinctIdentifier);
-              }}
-            />
-          );
-        })
-      )}
+          allIssues.map((issue, i) => {
+            const precinctIdentifier = issue.precinct["GEOID10"];
+            return (
+              <Alert
+                selected={precinctIdentifier === selectedPrecinct}
+                key={
+                  /* Should maybe be the GEOID10 as unique id */
+                  precinctIdentifier + issue.key + i
+                }
+                alert={issue}
+                type={issue.type}
+                onClick={() => {
+                  console.log(
+                    "focusing on precinct with the error- " + precinctIdentifier
+                  );
+                  setSelectedPrecinct(precinctIdentifier);
+                }}
+              />
+            );
+          })
+        )}
     </Flex>
   );
 };

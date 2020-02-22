@@ -8,7 +8,7 @@ import CorrelationMatrix from "./CorrelationMatrix";
 import { PrecinctTable } from "./PrecinctTable";
 import { UserContext } from "./Context";
 
-export const Main = ({data}) => {
+export const Main = ({ data }) => {
   console.log("DATA:", data);
   return (
     <Flex
@@ -31,7 +31,7 @@ export const Main = ({data}) => {
           borderColor: "black",
         }}
       >
-         <Nevada data={data}></Nevada> 
+        <Nevada data={data}></Nevada>
       </Box>
       {/* Right panel */}
       <Flex
@@ -45,7 +45,7 @@ export const Main = ({data}) => {
           p: [2, 3],
           justifyContent: "space-between"
         }}
-      ><PrecinctTable/>
+      ><PrecinctTable />
         {/* <CorrelationMatrix></CorrelationMatrix>
         <Sankey /> */}
       </Flex>

@@ -91,3 +91,6 @@ font-style: normal;
 }
 
 
+.test:hover {
+  fill: lightgray;
+}
