@@ -22,7 +22,7 @@ export const Issue = ({ precinct, issue, onClick, selected }) => {
           className={`top error ${type}`}
           sx={{ backgroundColor: "primary" }}
         >
-          <div className="title">Precinct {precinctDisplayName(precinct)}</div>
+          <div className="title">{precinctDisplayName(precinct)}</div>
         </div>
         <div className="bottom">
           <div className="content-left">
