@@ -119,11 +119,11 @@ export default function Nevada(props) {
   let clickablePrecincts = features.map(toPaths);
 
   return (
-    <div>
+    <div >
       <button onClick={reset} style={{ position: "relative", top: 50, left: 500 }}>
         ZOOM OUT
       </button>
-      <div>
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
         {loading ? (
           <Box>Loading...</Box>
         ) : nevada ? (
