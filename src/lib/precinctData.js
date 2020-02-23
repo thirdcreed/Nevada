@@ -2,7 +2,9 @@ import parseCsv from "csv-parse/lib/sync";
 import _ from "lodash";
 
 export const precinctId = candidatePrecinct => {
-  return candidatePrecinct.GEOID10;
+  const { county, precinct, GEOID10 } = candidatePrecinct;
+  return `${county}-${precinct}`;
+  // return candidatePrecinct.GEOID10;
 };
 
 export const candidateDisplayName = key => candidateNames[key] || key;
@@ -14,7 +16,7 @@ export const massageResult = csv => {
   const jsResults = parseCsv(csv, {
     columns: true,
     skip_empty_lines: true
-  }).slice(0, 100);
+  });
   let countyLevelGroup = _.groupBy(jsResults, "county");
   let electionData = _.reduce(
     countyLevelGroup,
@@ -108,7 +110,7 @@ const candidateNames = {
   bennetm: "Michael Bennet",
   bidenj: "Joe Biden",
   bloombergm: "Mike Bloombefg",
-  buttigiegp: "Pete Buttigiegp",
+  buttigiegp: "Pete Buttigieg",
   gabbardt: "Tulsi Gabbard",
   klobuchara: "Amy Klobuchar",
   other: "Other",

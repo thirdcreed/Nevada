@@ -49,6 +49,8 @@ export const Alerts = () => {
     p => refinedPrecincts[p].issues
   );
 
+  const issueCount = allIssues.length;
+
   return (
     <Flex
       sx={{
@@ -58,28 +60,33 @@ export const Alerts = () => {
       }}
     >
       <Styled.h2>Precincts of Note</Styled.h2>
-      {allIssues.length === 0 ? (
+      {issueCount === 0 ? (
         <Styled.p>Having a normal one</Styled.p>
       ) : (
-        Object.keys(refinedPrecincts).flatMap(precinctId => {
-          const { meta, issues } = refinedPrecincts[precinctId];
-          return issues.map((issue, ii) => {
-            return (
-              <Issue
-                selected={precinctId === selectedPrecinct}
-                key={
-                  /* Should maybe be the GEOID10 as unique id */
-                  precinctId + ii
-                }
-                precinct={meta}
-                issue={issue}
-                onClick={() => {
-                  setSelectedPrecinct(precinctId);
-                }}
-              />
-            );
-          });
-        })
+        <>
+          <Styled.h3>
+            {issueCount} issue{issueCount === 1 ? "" : "s"} found
+          </Styled.h3>
+          {Object.keys(refinedPrecincts).flatMap(precinctId => {
+            const { meta, issues } = refinedPrecincts[precinctId];
+            return issues.map((issue, ii) => {
+              return (
+                <Issue
+                  selected={precinctId === selectedPrecinct}
+                  key={
+                    /* Should maybe be the GEOID10 as unique id */
+                    precinctId + ii
+                  }
+                  precinct={meta}
+                  issue={issue}
+                  onClick={() => {
+                    setSelectedPrecinct(precinctId);
+                  }}
+                />
+              );
+            });
+          })}
+        </>
       )}
     </Flex>
   );

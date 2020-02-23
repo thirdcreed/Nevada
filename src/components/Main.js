@@ -8,7 +8,9 @@ import { Alerts } from "./Alerts";
 import { PrecinctTable } from "./PrecinctTable";
 import { UserContext } from "./Context";
 
-const showMap = true; //process.env.REACT_APP_SHOW_MAP === "true";
+const showMap =
+  process.env.REACT_APP_SHOW_MAP === "true" ||
+  window.location.query.match("showmap");
 
 const Loading = () => {
   return (
