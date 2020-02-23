@@ -15,6 +15,7 @@ import { precinctDisplayName } from "../lib/precinctData";
 
 export const Issue = ({ precinct, issue, onClick, selected }) => {
   const { type, message } = issue;
+
   // const { background, color } = alertColorTheme[type] || defaultColors;
   return (
     <div className={`card ${selected ? "selected" : ""}`} onClick={onClick}>
@@ -39,9 +40,11 @@ export const Issue = ({ precinct, issue, onClick, selected }) => {
   );
 };
 
-const IssueSummary = ({ allIssues }) => {
+const IssueSummary = ({ filters, setFilters, allIssues }) => {
   const issueCount = allIssues.length;
   const grouped = _.groupBy(allIssues, "code");
+
+
   return (
     <Box>
       <Styled.h3>
@@ -50,13 +53,27 @@ const IssueSummary = ({ allIssues }) => {
       {Object.keys(grouped).map(code => {
         const issues = grouped[code];
         const { summary } = issues[0];
+
+        let filtered = filters.includes(code);
         return (
-          <Styled.p key={code}>
-            {summary}: {issues.length}
-          </Styled.p>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <input
+              type="checkbox"
+              checked={filtered}
+              className="checkbox"
+              onChange={() => {
+                filtered ?
+                  setFilters(_.filter(filters, filter => filter !== code)) :
+                  setFilters([...filters, code])
+              }}
+            />
+            <Styled.p key={code}>
+              {summary}: {issues.length}
+            </Styled.p>
+          </div>
         );
       })}
-    </Box>
+    </Box >
   );
 };
 
@@ -67,17 +84,24 @@ export const Alerts = () => {
     data: { refined: refinedPrecincts }
   } = React.useContext(UserContext);
 
+
+  let filter = (precinct) => {
+    return filters.includes(precinct.code);
+  }
+
   const allIssues = Object.keys(refinedPrecincts).flatMap(
     p => refinedPrecincts[p].issues
-  );
+  )
+
+  let allCodes = _.uniq(_.map(allIssues, issue => issue.code));
+  const [filters, setFilters] = React.useState(allCodes);
 
   const issueCount = allIssues.length;
-
   return (
     <Flex
       sx={{
         flexDirection: "column",
-        justifyContent: "space-between",
+        justifyContent: "flex-start",
         maxWidth: "500px",
         alignSelf: "stretch",
         overflowY: "scroll",
@@ -88,29 +112,32 @@ export const Alerts = () => {
       {issueCount === 0 ? (
         <Styled.p>Having a normal one</Styled.p>
       ) : (
-        <>
-          <IssueSummary allIssues={allIssues} />
-          {Object.keys(refinedPrecincts).flatMap(precinctId => {
-            const { meta, issues } = refinedPrecincts[precinctId];
-            return issues.map((issue, ii) => {
-              return (
-                <Issue
-                  selected={precinctId === selectedPrecinct}
-                  key={
-                    /* Should maybe be the GEOID10 as unique id */
-                    precinctId + ii
-                  }
-                  precinct={meta}
-                  issue={issue}
-                  onClick={() => {
-                    setSelectedPrecinct(precinctId);
-                  }}
-                />
-              );
-            });
-          })}
-        </>
-      )}
+          <>
+            <IssueSummary
+              filters={filters}
+              setFilters={setFilters}
+              allIssues={allIssues} />
+            {Object.keys(refinedPrecincts).flatMap(precinctId => {
+              const { meta, issues } = refinedPrecincts[precinctId];
+              return issues.filter(filter).map((issue, ii) => {
+                return (
+                  <Issue
+                    selected={precinctId === selectedPrecinct}
+                    key={
+                      /* Should maybe be the GEOID10 as unique id */
+                      precinctId + ii
+                    }
+                    precinct={meta}
+                    issue={issue}
+                    onClick={() => {
+                      setSelectedPrecinct(precinctId);
+                    }}
+                  />
+                );
+              });
+            })}
+          </>
+        )}
     </Flex>
   );
 };
