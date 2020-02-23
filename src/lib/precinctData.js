@@ -2,9 +2,9 @@ import parseCsv from "csv-parse/lib/sync";
 import _ from "lodash";
 
 export const precinctId = candidatePrecinct => {
-  const { GEOID10 } = candidatePrecinct;
-  // return `${county}-${precinct}`;
-  return GEOID10;
+  const { county, precinct } = candidatePrecinct;
+  return `${county}-${precinct}`;
+  // return GEOID10;
 };
 
 export const candidateDisplayName = key => candidateNames[key] || key;
@@ -54,56 +54,7 @@ export const massageResult = csv => {
     return acc;
   }, {});
 
-  function toAlerts(row) {
-    return row; //adapt model however we like.
-  }
-
-  function toWarnings(row) {
-    return row; //adapt model however we like.
-  }
-
-  function isFalse(row, prop) {
-    return falsey(row[prop]);
-  }
-
-  let viable_loss = _.filter(
-    jsResults,
-    row => !isFalse(row, "viable_loss")
-  ).map(toAlerts);
-  let more_final_votes = _.filter(
-    jsResults,
-    row => !isFalse(row, "more_final_votes")
-  ).map(toAlerts);
-  let nonviable_no_realign = _.filter(
-    jsResults,
-    row => !isFalse(row, "nonviable_no_realign")
-  ).map(toAlerts);
-
-  let del_counts_diff = _.filter(
-    jsResults,
-    row => !isFalse(row, "del_counts_diff")
-  ).map(toWarnings);
-  let has_alpha_shift = _.filter(
-    jsResults,
-    row => !isFalse(row, "has_alpha_shift")
-  ).map(toWarnings);
-  let fewer_final_votes = _.filter(
-    jsResults,
-    row => !isFalse(row, "fewer_final_votes")
-  ).map(toWarnings);
-  let extra_del_given = _.filter(
-    jsResults,
-    row => !isFalse(row, "extra_del_given")
-  ).map(toWarnings);
-
-  let alerts = { viable_loss, more_final_votes, nonviable_no_realign };
-  let warnings = {
-    del_counts_diff,
-    has_alpha_shift,
-    fewer_final_votes,
-    extra_del_given
-  };
-  return { electionData, alerts, warnings, refined };
+  return { electionData, refined, rows: jsResults };
 };
 
 const candidateNames = {
@@ -150,7 +101,7 @@ const messageMap = {
     "All viable candidates had 1 delegate and could not have it taken away, so more delegates than originally intended were given for this precinct"
 };
 
-const alertTypes = {
+const issueTypes = {
   // 12 viable_loss          logical: if a candidate was viable in 1st round and lost votes going to final round
   viable_loss: "error",
   // 13 nonviable_no_realign logical: if a nonviable candidate from 1st round did not realign in final round
@@ -167,6 +118,25 @@ const alertTypes = {
   del_counts_diff: "error",
   // 19 extra_del_given      logical: too many delegates given out but all candidates had 1 delegate, so an extra delegate was given. warning, not error
   extra_del_given: "error"
+};
+
+const issueSummaries = {
+  // 12 viable_loss          logical: if a candidate was viable in 1st round and lost votes going to final round
+  viable_loss: "Viable Loss",
+  // 13 nonviable_no_realign logical: if a nonviable candidate from 1st round did not realign in final round
+  nonviable_no_realign: "Nonviable no realign",
+  // 14 alpha_shift          string: name of candidate that had alphabetical shift
+  alpha_shift: "Alphabetic shift",
+  // 15 has_alpha_shift      logical: alphabetical shift in vote reporting detected. warning, not error
+  has_alpha_shift: "Alphabetic shift",
+  // 16 more_final_votes     logical: more votes in final alignment than 1st alignment
+  more_final_votes: "Votes increased",
+  // 17 fewer_final_votes    logical: fewer votes in final alignment than 1st. warning, not error
+  fewer_final_votes: "Vote count decreased",
+  // 18 del_counts_diff      logical: our delegate counts differ from those reported
+  del_counts_diff: "Our delegate count differs",
+  // 19 extra_del_given      logical: too many delegates given out but all candidates had 1 delegate, so an extra delegate was given. warning, not error
+  extra_del_given: "Total delegates too high"
 };
 
 const precinctKeys = [
@@ -279,16 +249,7 @@ const refinePrecinct = candidatesByPrecinct => {
     metaKeys
   );
 
-  const precinctIssues = issuesForObject(precinctLevel)
-    .filter(key => !falsey(precinctLevel[key]))
-    .map(k => {
-      const type = alertTypes[k];
-      if (type) {
-        return { type, message: humanMessage(k, precinctLevel) };
-      } else {
-        return undefined;
-      }
-    });
+  const precinctIssues = issuesForObject(precinctLevel);
 
   const candidateIssues = Object.keys(candidateLevel).flatMap(candidateKey => {
     const candidatePrecinct = candidateLevel[candidateKey];
@@ -309,11 +270,16 @@ const issuesForObject = objectWithIssueKeys => {
   return Object.keys(objectWithIssueKeys)
     .filter(key => !falsey(objectWithIssueKeys[key]))
     .reduce((acc, k) => {
-      const type = alertTypes[k];
+      const type = issueTypes[k];
       if (type) {
         return [
           ...acc,
-          { type, message: humanMessage(k, objectWithIssueKeys) || k }
+          {
+            type,
+            message: humanMessage(k, objectWithIssueKeys) || k,
+            code: k,
+            summary: issueSummaries[k] || k
+          }
         ];
       } else {
         return acc;
