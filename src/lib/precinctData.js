@@ -2,16 +2,17 @@ import parseCsv from "csv-parse/lib/sync";
 import _ from "lodash";
 
 export const precinctId = candidatePrecinct => {
-  const { county, precinct, GEOID10 } = candidatePrecinct;
-  return `${county}-${precinct}`;
-  // return candidatePrecinct.GEOID10;
+  const { GEOID10 } = candidatePrecinct;
+  // return `${county}-${precinct}`;
+  return GEOID10;
 };
 
 export const candidateDisplayName = key => candidateNames[key] || key;
 
-export const precinctDisplayName = candidatePrecinct =>
-  `${precinctId(candidatePrecinct)}`;
-
+export const precinctDisplayName = candidatePrecinct => {
+  const { county, precinct } = candidatePrecinct;
+  return `${county} ${precinct}`;
+};
 export const massageResult = csv => {
   const jsResults = parseCsv(csv, {
     columns: true,
