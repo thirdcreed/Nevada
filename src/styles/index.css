@@ -36,8 +36,6 @@ font-style: normal;
   flex-direction:row;
 }
 
-
-
 .title {
   margin-left:4px;
   color:black;
@@ -93,4 +91,40 @@ font-style: normal;
 
 .test:hover {
   fill: lightgray;
+}
+
+
+.checkbox {
+  -webkit-appearance: none;
+  appearance: none;
+	background-color: white;
+	border: 2px solid black;
+	padding: 9px;
+	border-radius: 3px;
+	display: inline-block;
+  position: relative;
+  margin-right:10px;
+}
+
+.checkbox:active, .regular-checkbox:checked:active {
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+}
+
+.checkbox:checked {
+	background-color: white;
+	border: 2px solid black;
+	color: black;
+}
+
+.checkbox:checked:after {
+	content: '\2714';
+	font-size: 14px;
+	position: absolute;
+	top: 0px;
+	left: 3px;
+	color: black;
+}
+
+input[type="checkbox"]:focus{
+  outline:0;
 }
