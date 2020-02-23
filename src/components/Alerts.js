@@ -78,7 +78,10 @@ export const Alerts = () => {
       sx={{
         flexDirection: "column",
         justifyContent: "space-between",
-        maxWidth: "500px"
+        maxWidth: "500px",
+        alignSelf: "stretch",
+        overflowY: "scroll",
+        height: "100vh"
       }}
     >
       <Styled.h2>Some issues we've noticed</Styled.h2>
