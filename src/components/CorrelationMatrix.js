@@ -76,7 +76,7 @@ export default function CorrelationMatrix(_props) {
             <MatrixRow>
               {row.values.map((cell, i) => {
                 //   console.log({cell,color:d3.interpolateRdBu(cell)})
-                return i == 0 ? (
+                return i === 0 ? (
                   <Cell>
                     <img
                       key={i}

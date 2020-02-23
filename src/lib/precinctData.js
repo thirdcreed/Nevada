@@ -282,6 +282,8 @@ const refinePrecinct = candidatesByPrecinct => {
       const type = alertTypes[k];
       if (type) {
         return { type, message: humanMessage(k, precinctLevel) };
+      } else {
+        return undefined;
       }
     });
 
