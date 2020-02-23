@@ -10,7 +10,8 @@ import { UserContext } from "./Context";
 
 const showMap =
   process.env.REACT_APP_SHOW_MAP === "true" ||
-  window.location.query.match("showmap");
+  window.location.search.match("showmap");
+console.log({ env: process.env, showMap });
 
 const Loading = () => {
   return (
