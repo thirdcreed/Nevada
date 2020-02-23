@@ -21,15 +21,15 @@ export const massageResult = csv => {
   let countyLevelGroup = _.groupBy(jsResults, "county");
   let electionData = _.reduce(
     countyLevelGroup,
-    function(result, county, countyKey) {
+    function (result, county, countyKey) {
       let precinctGroup = _.groupBy(county, "precinct");
       precinctGroup = _.reduce(
         precinctGroup,
-        function(precinctResult, precinct, key) {
+        function (precinctResult, precinct, key) {
           let candidate = _.groupBy(precinct, "candidate");
           precinctResult[key] = _.reduce(
             candidate,
-            function(candidateResult, c, candidateKey) {
+            function (candidateResult, c, candidateKey) {
               candidateResult[candidateKey] = c[0]; // In the future we can reduce this to a sparser model here.
               return candidateResult;
             },
@@ -184,7 +184,8 @@ const candidateKeys = [
   "how_many_closest",
   "comments",
   "tie_winner",
-  "tie_loser"
+  "tie_loser",
+  "reported_del_given"
 ];
 
 const humanMessage = (key, precinct) => {

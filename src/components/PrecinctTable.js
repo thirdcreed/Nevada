@@ -157,10 +157,10 @@ const VotesSection = ({ data, show, toggleShow }) => {
                     <Styled.p>{candidate["alignfinal"]}</Styled.p>
                   </Styled.td>
                   <Styled.td>
-                    <Styled.p>{candidate["caucus_formula_result"]}</Styled.p>
+                    <Styled.p>{candidate["final_del"]}</Styled.p>
                   </Styled.td>
                   <Styled.td>
-                    <Styled.p>{candidate["final_del"]}</Styled.p>
+                    <Styled.p>{candidate["reported_del_given"]}</Styled.p>
                   </Styled.td>
                 </Styled.tr>
               );
