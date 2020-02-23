@@ -22,7 +22,7 @@ export default function Nevada(props) {
     var request = new XMLHttpRequest();
     request.open("GET", "https://nevada-cranks.herokuapp.com/nevada", true);
 
-    request.onload = function () {
+    request.onload = function() {
       if (this.status >= 200 && this.status < 400) {
         // Success!
         var geojson = this.response;
@@ -38,7 +38,7 @@ export default function Nevada(props) {
       }
     };
 
-    request.onerror = function () {
+    request.onerror = function() {
       console.warn("Nevada JSON not loading");
     };
     request.send();
@@ -67,16 +67,16 @@ export default function Nevada(props) {
   function reset() {
     setZoom(
       "translate(" +
-      width / 2 +
-      "," +
-      height / 2 +
-      ")scale(" +
-      1 +
-      ")translate(" +
-      -300 +
-      "," +
-      -300 +
-      ")"
+        width / 2 +
+        "," +
+        height / 2 +
+        ")scale(" +
+        1 +
+        ")translate(" +
+        -300 +
+        "," +
+        -300 +
+        ")"
     );
     setStrokeWidth(0.5 + "px");
     // setCurrentZoom(null);
@@ -108,16 +108,16 @@ export default function Nevada(props) {
         setStrokeWidth(1.5 / k + "px");
         setZoom(
           "translate(" +
-          width / 2 +
-          "," +
-          height / 2 +
-          ") scale(" +
-          k +
-          ") translate(" +
-          -x +
-          "," +
-          -y +
-          ")"
+            width / 2 +
+            "," +
+            height / 2 +
+            ") scale(" +
+            k +
+            ") translate(" +
+            -x +
+            "," +
+            -y +
+            ")"
         );
         setCurrentZoom(feature.properties.GEOID10);
       }
@@ -127,8 +127,8 @@ export default function Nevada(props) {
       feature.properties.GEOID10 === selectedPrecinct
         ? "url(#diagonal-stripe-2)"
         : alerts.includes(feature.properties.GEOID10)
-          ? "#ef3a42"
-          : "white";
+        ? "#ef3a42"
+        : "white";
 
     if (selectedPrecinct === feature.properties.GEOID10) {
       zoomToPrecinct();
@@ -156,7 +156,7 @@ export default function Nevada(props) {
       >
         ZOOM OUT
       </button>
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
+      <div style={{ display: "flex", justifyContent: "center" }}>
         {loading ? (
           <Box>Loading...</Box>
         ) : nevada ? (
@@ -187,8 +187,8 @@ export default function Nevada(props) {
             </g>
           </svg>
         ) : (
-              <Box>An unexpected error occurred</Box>
-            )}
+          <Box>An unexpected error occurred</Box>
+        )}
       </div>
     </div>
   );
