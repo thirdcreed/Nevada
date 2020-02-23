@@ -1,6 +1,7 @@
 /** @jsx jsx */
 import React from "react";
-import { jsx, Flex, Styled } from "theme-ui";
+import { jsx, Flex, Styled, Box } from "theme-ui";
+import _ from "lodash";
 import { UserContext } from "./Context";
 import NounCard from "./noun_card.js";
 import { precinctDisplayName } from "../lib/precinctData";
@@ -38,6 +39,27 @@ export const Issue = ({ precinct, issue, onClick, selected }) => {
   );
 };
 
+const IssueSummary = ({ allIssues }) => {
+  const issueCount = allIssues.length;
+  const grouped = _.groupBy(allIssues, "code");
+  return (
+    <Box>
+      <Styled.h3>
+        {issueCount} issue{issueCount === 1 ? "" : "s"} found
+      </Styled.h3>
+      {Object.keys(grouped).map(code => {
+        const issues = grouped[code];
+        const { summary } = issues[0];
+        return (
+          <Styled.p key={code}>
+            {summary}: {issues.length}
+          </Styled.p>
+        );
+      })}
+    </Box>
+  );
+};
+
 export const Alerts = () => {
   const {
     selectedPrecinct,
@@ -59,14 +81,12 @@ export const Alerts = () => {
         maxWidth: "500px"
       }}
     >
-      <Styled.h2>Precincts of Note</Styled.h2>
+      <Styled.h2>Some issues we've noticed</Styled.h2>
       {issueCount === 0 ? (
         <Styled.p>Having a normal one</Styled.p>
       ) : (
         <>
-          <Styled.h3>
-            {issueCount} issue{issueCount === 1 ? "" : "s"} found
-          </Styled.h3>
+          <IssueSummary allIssues={allIssues} />
           {Object.keys(refinedPrecincts).flatMap(precinctId => {
             const { meta, issues } = refinedPrecincts[precinctId];
             return issues.map((issue, ii) => {
