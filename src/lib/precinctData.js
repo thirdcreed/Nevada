@@ -21,15 +21,15 @@ export const massageResult = csv => {
   let countyLevelGroup = _.groupBy(jsResults, "county");
   let electionData = _.reduce(
     countyLevelGroup,
-    function (result, county, countyKey) {
+    function(result, county, countyKey) {
       let precinctGroup = _.groupBy(county, "precinct");
       precinctGroup = _.reduce(
         precinctGroup,
-        function (precinctResult, precinct, key) {
+        function(precinctResult, precinct, key) {
           let candidate = _.groupBy(precinct, "candidate");
           precinctResult[key] = _.reduce(
             candidate,
-            function (candidateResult, c, candidateKey) {
+            function(candidateResult, c, candidateKey) {
               candidateResult[candidateKey] = c[0]; // In the future we can reduce this to a sparser model here.
               return candidateResult;
             },
@@ -72,71 +72,6 @@ const candidateNames = {
   uncommitted: "Uncommitted",
   warrene: "Elizabeth Warren",
   yanga: "Andrew Yang"
-};
-
-// for a given message type, a string or precinct => string function
-const messageMap = {
-  viable_loss: ({ candidate }) =>
-    `${candidateDisplayName(
-      candidate
-    )} was viable in round 1, lost votes in round 2`,
-  nonviable_no_realign: ({ candidate }) =>
-    `${candidateDisplayName(
-      candidate
-    )} was nonviable in 1st-round but did not realign`,
-  alpha_shift: ({ candidate, alpha_shift }) =>
-    `Alphabetical shift in voting detected from ${candidateDisplayName(
-      candidate
-    )} to ${candidateDisplayName(alpha_shift)}`,
-  more_final_votes: ({ candidate }) =>
-    `${candidateDisplayName(
-      candidate
-    )} has more votes in final alignment than 1st alignment`,
-  fewer_final_votes: ({ candidate }) =>
-    `${candidateDisplayName(
-      candidate
-    )} has fewer votes in final alignment than 1st alignment`,
-  del_counts_diff: "Our delegate counts differ from those reported",
-  extra_del_given:
-    "All viable candidates had 1 delegate and could not have it taken away, so more delegates than originally intended were given for this precinct"
-};
-
-const issueTypes = {
-  // 12 viable_loss          logical: if a candidate was viable in 1st round and lost votes going to final round
-  viable_loss: "error",
-  // 13 nonviable_no_realign logical: if a nonviable candidate from 1st round did not realign in final round
-  nonviable_no_realign: "error",
-  // 14 alpha_shift          string: name of candidate that had alphabetical shift
-  alpha_shift: "error",
-  // 15 has_alpha_shift      logical: alphabetical shift in vote reporting detected. warning, not error
-  has_alpha_shift: "warning",
-  // 16 more_final_votes     logical: more votes in final alignment than 1st alignment
-  more_final_votes: "error",
-  // 17 fewer_final_votes    logical: fewer votes in final alignment than 1st. warning, not error
-  fewer_final_votes: "warning",
-  // 18 del_counts_diff      logical: our delegate counts differ from those reported
-  del_counts_diff: "error",
-  // 19 extra_del_given      logical: too many delegates given out but all candidates had 1 delegate, so an extra delegate was given. warning, not error
-  extra_del_given: "error"
-};
-
-const issueSummaries = {
-  // 12 viable_loss          logical: if a candidate was viable in 1st round and lost votes going to final round
-  viable_loss: "Viable Loss",
-  // 13 nonviable_no_realign logical: if a nonviable candidate from 1st round did not realign in final round
-  nonviable_no_realign: "Nonviable no realign",
-  // 14 alpha_shift          string: name of candidate that had alphabetical shift
-  alpha_shift: "Alphabetic shift",
-  // 15 has_alpha_shift      logical: alphabetical shift in vote reporting detected. warning, not error
-  has_alpha_shift: "Alphabetic shift",
-  // 16 more_final_votes     logical: more votes in final alignment than 1st alignment
-  more_final_votes: "Votes increased",
-  // 17 fewer_final_votes    logical: fewer votes in final alignment than 1st. warning, not error
-  fewer_final_votes: "Vote count decreased",
-  // 18 del_counts_diff      logical: our delegate counts differ from those reported
-  del_counts_diff: "Our delegate count differs",
-  // 19 extra_del_given      logical: too many delegates given out but all candidates had 1 delegate, so an extra delegate was given. warning, not error
-  extra_del_given: "Total delegates too high"
 };
 
 const precinctKeys = [
@@ -187,11 +122,6 @@ const candidateKeys = [
   "tie_loser",
   "reported_del_given"
 ];
-
-const humanMessage = (key, precinct) => {
-  const message = messageMap[key];
-  return message && typeof message === "function" ? message(precinct) : message;
-};
 
 const flattenPrecincts = data => {
   const { electionData } = data;
@@ -267,23 +197,86 @@ const refinePrecinct = candidatesByPrecinct => {
   };
 };
 
+const issueMap = {
+  // 12 viable_loss          logical: if a candidate was viable in 1st round and lost votes going to final round
+  viable_loss: {
+    type: "error",
+    summary: "Viable Loss",
+    message: ({ candidate }) =>
+      `${candidateDisplayName(
+        candidate
+      )} was viable in round 1, lost votes in round 2`
+  },
+  // 13 nonviable_no_realign logical: if a nonviable candidate from 1st round did not realign in final round
+  nonviable_no_realign: {
+    type: "error",
+    message: ({ candidate }) =>
+      `${candidateDisplayName(
+        candidate
+      )} was nonviable in 1st-round but did not realign`,
+    summary: "Nonviable no realign"
+  },
+  // 14 alpha_shift          string: name of candidate that had alphabetical shift
+  alpha_shift: {
+    type: "error",
+    message: ({ candidate, alpha_shift }) =>
+      `Alphabetical shift in voting detected from ${candidateDisplayName(
+        candidate
+      )} to ${candidateDisplayName(alpha_shift)}`,
+    summary: "Alphabetic shift"
+  },
+  // 16 more_final_votes     logical: more votes in final alignment than 1st alignment
+  more_final_votes: {
+    type: "error",
+    message: `Precinct has more votes in final alignment than 1st alignment`,
+    summary: "Vote total increased"
+  },
+  // 17 fewer_final_votes    logical: fewer votes in final alignment than 1st. warning, not error
+  fewer_final_votes: {
+    type: "warning",
+    summary: "Vote total decreased",
+    message: `Precinct has fewer votes in final alignment than 1st alignment`
+  },
+  // 18 del_counts_diff      logical: our delegate counts differ from those reported
+  del_counts_diff: {
+    type: "error",
+    summary: "Our delegate count differs",
+    message: "Our delegate counts differ from those reported"
+  },
+  // 19 extra_del_given      logical: too many delegates given out but all candidates had 1 delegate, so an extra delegate was given. warning, not error
+  extra_del_given: {
+    type: "error",
+    summary: "Total delegates too high",
+    message:
+      "All viable candidates had 1 delegate and could not have it taken away, so more delegates than originally intended were given for this precinct"
+  }
+};
+
 const issuesForObject = objectWithIssueKeys => {
   return Object.keys(objectWithIssueKeys)
-    .filter(key => !falsey(objectWithIssueKeys[key]))
+    .filter(
+      key =>
+        !falsey(objectWithIssueKeys[key]) &&
+        objectWithIssueKeys.candidate !== "uncommitted"
+    )
     .reduce((acc, k) => {
-      const type = issueTypes[k];
-      if (type) {
+      const issue = issueMap[k];
+      if (!issue || objectWithIssueKeys.candidate === "Uncommitted") {
+        return acc;
+      } else {
+        const { message, type, summary } = issue;
         return [
           ...acc,
           {
-            type,
-            message: humanMessage(k, objectWithIssueKeys) || k,
             code: k,
-            summary: issueSummaries[k] || k
+            message:
+              typeof message === "function"
+                ? message(objectWithIssueKeys)
+                : message,
+            type,
+            summary
           }
         ];
-      } else {
-        return acc;
       }
     }, []);
 };
