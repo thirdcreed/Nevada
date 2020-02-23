@@ -25,8 +25,9 @@ export const About = () => {
         ].
       </Styled.p>
       <Styled.p>
-        We tried our best to get the math right; If you find an issue please
-        help us by filing an issue with the repositories and reach out to{" "}
+        We tried our best to get the math right. If you find an issue please
+        help us by filing an issue with the affected repository or by reaching
+        out to{" "}
         <Styled.a href={twitterLink} target="_blank">
           @uglycaucus
         </Styled.a>{" "}
